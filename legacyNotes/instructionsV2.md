@@ -33,3 +33,6 @@ build
 `npx eas build --platform android`
  ή για apk με προσθήκη στο eas.json
  `eas build --platform android --profile preview`
+
+ svg
+ `npm install react-native-svg`

@@ -3,8 +3,14 @@
 import { View, StyleSheet } from 'react-native'
 import BlackHoleBoard from '@/components/svg/blackHoleBoard'
 import Navbar from '@/layout/Navbar'
+import { useBlackHole } from '@/hooks/useBlackHole'
 
 const BlackHole = () => {
+  const {
+    currentPlayer,
+    handleCellPress,
+  } = useBlackHole()
+
   return (
     <>
       <Navbar
@@ -16,7 +22,9 @@ const BlackHole = () => {
         hasPeer={false}
       />
       <View style={styles.container}>
-        <BlackHoleBoard />
+        <BlackHoleBoard
+          handleCellPress={handleCellPress}
+        />
       </View>
     </>
 

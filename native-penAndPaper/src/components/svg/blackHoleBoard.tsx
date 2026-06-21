@@ -28,7 +28,13 @@ const createBoard = (): Cell[] => {
   return cells
 }
 
-const BlackHoleBoard = () => {
+type props = {
+  handleCellPress: (cellId: number) => void
+}
+
+const BlackHoleBoard = ({
+  handleCellPress,
+}: props) => {
   const cells = createBoard()
 
   const RADIUS = 20
@@ -36,7 +42,6 @@ const BlackHoleBoard = () => {
   const V_SPACING = 50
   const SVG_WIDTH = 350
   const SVG_HEIGHT = 400
-
   const CENTER_X = SVG_WIDTH / 2
 
   return (
@@ -45,14 +50,8 @@ const BlackHoleBoard = () => {
       height={SVG_HEIGHT}
     >
       {cells.map((cell) => {
-        const x =
-          CENTER_X -
-          (cell.row * H_SPACING) / 2 +
-          cell.col * H_SPACING
-
-        const y =
-          50 +
-          cell.row * V_SPACING
+        const x = CENTER_X - (cell.row * H_SPACING) / 2 + cell.col * H_SPACING
+        const y = 50 + cell.row * V_SPACING
 
         return (
           <Circle
@@ -63,6 +62,7 @@ const BlackHoleBoard = () => {
             fill='white'
             stroke='black'
             strokeWidth={2}
+            onPress={() => handleCellPress(cell.id)}
           />
         )
       })}
