@@ -16,6 +16,7 @@ const BlackHole = () => {
     winners,
     gameOver,
     playAgain,
+    scores,
   } = useBlackHole({
     numberOfPlayers,
   })
@@ -53,6 +54,20 @@ const BlackHole = () => {
             Winner{winners.length > 1 ? 's' : ''}: Player{' '}
             {winners.join(', Player ')}
           </Text>
+
+          <Text style={styles.playerText}>
+            Player 1 Score: {scores.player1}
+          </Text>
+
+          <Text style={styles.playerText}>
+            Player 2 Score: {scores.player2}
+          </Text>
+
+          {numberOfPlayers === 3 && (
+            <Text style={styles.playerText}>
+              Player 3 Score: {scores.player3}
+            </Text>
+          )}
 
           <Button
             title='Play Again'

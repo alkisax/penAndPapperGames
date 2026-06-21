@@ -1,6 +1,7 @@
 // native-penAndPaper\src\hooks\useBlackHole.ts
 import { Cell, NumberOfPlayers } from "@/types/blackHole.types";
 import { createBoard, getNeighbors } from "@/utils/blackHoleUtils/createBoard";
+import { suggestMove } from "@/utils/blackHoleUtils/suggestMove";
 import { useState, useEffect } from "react";
 
 type props = {
@@ -15,6 +16,11 @@ export const useBlackHole = ({ numberOfPlayers = 2 }: props) => {
   const [player3Value, setPlayer3Value] = useState(1);
   const [winners, setWinners] = useState<number[]>([]);
   const [gameOver, setGameOver] = useState(false);
+  const [scores, setScores] = useState({
+    player1: 0,
+    player2: 0,
+    player3: 0,
+  });
 
   useEffect(() => {
     setCells(createBoard(numberOfPlayers));
@@ -38,6 +44,7 @@ export const useBlackHole = ({ numberOfPlayers = 2 }: props) => {
     const selectedCell = cells.find((cell) => cell.id === cellId);
 
     if (!selectedCell) return;
+    if (selectedCell.owner !== null) return;
 
     const updatedCells = cells.map((cell) => {
       if (cell.id !== cellId) return cell;
@@ -77,20 +84,28 @@ export const useBlackHole = ({ numberOfPlayers = 2 }: props) => {
     }
 
     console.log(`Player ${currentPlayer} selected cell ${cellId}`);
+
+    let nextPlayer: NumberOfPlayers;
+
     if (numberOfPlayers === 3) {
       if (currentPlayer === 1) {
-        setCurrentPlayer(2);
+         nextPlayer = 2;
       } else if (currentPlayer === 2) {
-        setCurrentPlayer(3);
+        nextPlayer = 3;
       } else {
-        setCurrentPlayer(1);
+        nextPlayer = 1;
       }
     } else {
-      setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+      nextPlayer = currentPlayer === 1 ? 2 : 1;
+    }
+    setCurrentPlayer(nextPlayer);
+
+    if (nextPlayer === 2) {
+      suggestMove({cells});
     }
   };
 
-  const calculateScores = (cells: Cell[]) => {
+  const calculateScores = (updatedCells: Cell[]) => {
     const blackHole = cells.find((cell) => cell.isBlackHole);
 
     if (!blackHole) return;
@@ -115,9 +130,14 @@ export const useBlackHole = ({ numberOfPlayers = 2 }: props) => {
       }
     });
 
-    console.log("Player 1:", player1Score);
-    console.log("Player 2:", player2Score);
-    console.log("Player 3:", player3Score);
+    // console.log("Player 1:", player1Score);
+    // console.log("Player 2:", player2Score);
+    // console.log("Player 3:", player3Score);
+    setScores({
+      player1: player1Score,
+      player2: player2Score,
+      player3: player3Score,
+    });
 
     const scores = [
       { player: 1, score: player1Score },
@@ -162,5 +182,6 @@ export const useBlackHole = ({ numberOfPlayers = 2 }: props) => {
     winners,
     gameOver,
     playAgain,
+    scores,
   };
 };
