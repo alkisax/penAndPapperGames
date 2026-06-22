@@ -94,7 +94,7 @@ export const suggestMove = ({
     )
   })
 
-  console.log('Evaluations:', evaluations)
+  // console.log('Evaluations:', evaluations)
 
   // Βρίσκουμε ποιο πιθανό black hole είναι καλύτερο για τον Player 2.
   // Καλύτερο = μικρότερο Player 2 score.
@@ -107,10 +107,10 @@ export const suggestMove = ({
       return best
     })
 
-  console.log(
-    'Best black hole for Player 2:',
-    bestBlackHoleForPlayer2.blackHoleId,
-  )
+  // console.log(
+  //   'Best black hole for Player 2:',
+  //   bestBlackHoleForPlayer2.blackHoleId,
+  // )
 
   // Δεν παίζουμε το κελί που θέλουμε να μείνει black hole.
   // Το αφαιρούμε από τις πιθανές κινήσεις.
@@ -121,7 +121,7 @@ export const suggestMove = ({
   )
 
   if (possibleMoves.length === 0) {
-    console.log('suggested move👉👉 none')
+    // console.log('suggested move👉👉 none')
     return null
   }
 

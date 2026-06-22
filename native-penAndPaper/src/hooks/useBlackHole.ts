@@ -21,6 +21,7 @@ export const useBlackHole = ({ numberOfPlayers = 2 }: props) => {
     player2: 0,
     player3: 0,
   });
+  const [isPlayer2Ai, setIsPlayer2Ai] = useState(false);
 
   useEffect(() => {
     setCells(createBoard(numberOfPlayers));
@@ -31,6 +32,25 @@ export const useBlackHole = ({ numberOfPlayers = 2 }: props) => {
     setWinners([]);
     setGameOver(false);
   }, [numberOfPlayers]);
+
+  // ai player in useEffect
+  useEffect(() => {
+    if (!isPlayer2Ai) return;
+    if (currentPlayer !== 2) return;
+    if (gameOver) return;
+
+    const suggestedMove = suggestMove({
+      cells,
+    });
+
+    if (suggestedMove === null) return;
+
+    const timeoutId = setTimeout(() => {
+      handleCellPress(suggestedMove);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [currentPlayer, isPlayer2Ai, gameOver]);
 
   const handleCellPress = (cellId: number) => {
     let value = player1Value;
@@ -89,7 +109,7 @@ export const useBlackHole = ({ numberOfPlayers = 2 }: props) => {
 
     if (numberOfPlayers === 3) {
       if (currentPlayer === 1) {
-         nextPlayer = 2;
+        nextPlayer = 2;
       } else if (currentPlayer === 2) {
         nextPlayer = 3;
       } else {
@@ -100,17 +120,20 @@ export const useBlackHole = ({ numberOfPlayers = 2 }: props) => {
     }
     setCurrentPlayer(nextPlayer);
 
-    if (nextPlayer === 2) {
-      suggestMove({cells});
-    }
+    // // ai player
+    // if (nextPlayer === 2 && isPlayer2Ai) {
+    //   suggestMove({
+    //     cells: updatedCells,
+    //   });
+    // }
   };
 
   const calculateScores = (updatedCells: Cell[]) => {
-    const blackHole = cells.find((cell) => cell.isBlackHole);
+    const blackHole = updatedCells.find((cell) => cell.isBlackHole);
 
     if (!blackHole) return;
 
-    const neighbors = getNeighbors(blackHole, cells);
+    const neighbors = getNeighbors(blackHole, updatedCells);
 
     let player1Score = 0;
     let player2Score = 0;
@@ -183,5 +206,7 @@ export const useBlackHole = ({ numberOfPlayers = 2 }: props) => {
     gameOver,
     playAgain,
     scores,
+    isPlayer2Ai,
+    setIsPlayer2Ai,
   };
 };

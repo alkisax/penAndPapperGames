@@ -1,5 +1,5 @@
 // src/app/blackHole/blackHole.tsx
-import { View, StyleSheet, Button, Text } from 'react-native'
+import { View, StyleSheet, Button, Text, Switch } from 'react-native'
 import BlackHoleBoard from '@/components/svg/blackHoleBoard'
 import Navbar from '@/layout/Navbar'
 import { useBlackHole } from '@/hooks/useBlackHole'
@@ -17,6 +17,8 @@ const BlackHole = () => {
     gameOver,
     playAgain,
     scores,
+    isPlayer2Ai,
+    setIsPlayer2Ai,
   } = useBlackHole({
     numberOfPlayers,
   })
@@ -41,6 +43,20 @@ const BlackHole = () => {
         <Button
           title='3 Players'
           onPress={() => setNumberOfPlayers(3)}
+        />
+      </View>
+      
+      <View style={styles.controls}>
+        <Text>Play against AI</Text>
+
+        <Switch
+          value={isPlayer2Ai}
+          onValueChange={(value) => {
+            setIsPlayer2Ai(value)
+            console.log(
+              `Player 2 is AI: ${value}`,
+            )
+          }}
         />
       </View>
 
