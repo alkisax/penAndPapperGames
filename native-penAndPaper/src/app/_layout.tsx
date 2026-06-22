@@ -1,13 +1,16 @@
 // src/app/_layout.tsx
 
 import { Stack } from 'expo-router'
+import { ThemeProvider } from '@/context/ThemeContext'
 
 export default function RootLayout() {
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-    />
+    <ThemeProvider>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      />
+    </ThemeProvider>
   )
 }

@@ -1,286 +1,276 @@
-// native-morse-trainer\styles\global.ts
+// src/styles/global.ts
 import { StyleSheet } from "react-native";
 
 export const COLORS = {
   light: {
-    background: "#ffffff",
-    topBar: "#fffdf4",
-    topBarBorder: "#ece6c9",
-    button: "#fff7cc",
-    buttonBorder: "#d8cf9d",
-    text: "#222",
-    dimText: "#666",
-    holdButton: "#5c1a1b",
-    holdButtonActive: "#7a2224",
-    holdButtonDisabled: "#555",
-    panel: "#f4f1e3",
+    background: "#fffdf4",
+    surface: "#ffffff",
+    surfaceAlt: "#f4f1e3",
+    border: "#ddd4aa",
+    text: "#222222",
+    dimText: "#666666",
+
+    primary: "#5c1a1b",
+    primaryActive: "#7a2224",
+
+    player1: "#2f80ed",
+    player2: "#27ae60",
+    player3: "#d63031",
+    blackHole: "#111111",
+
+    switchTrackOff: "#d8cf9d",
+    switchTrackOn: "#7a2224",
+    switchThumb: "#ffffff",
+
+    topBar: "#ffffff",
+    topBarBorder: "#ddd4aa",
+    panel: "#ffffff",
     panelBorder: "#ddd4aa",
-    inputBackground: "#ffffff",
-    green: "#2ecc71",
+    buttonBorder: "#ddd4aa",
+    green: "#27ae60",
     red: "#d63031",
   },
 
   dark: {
     background: "#121212",
+    surface: "#1b1b1b",
+    surfaceAlt: "#1f1f1f",
+    border: "#333333",
+    text: "#f1f1f1",
+    dimText: "#999999",
+
+    primary: "#7a2224",
+    primaryActive: "#a62d30",
+
+    player1: "#4da3ff",
+    player2: "#2ecc71",
+    player3: "#ff6b6b",
+    blackHole: "#000000",
+
+    switchTrackOff: "#444444",
+    switchTrackOn: "#a62d30",
+    switchThumb: "#ffffff",
+
     topBar: "#1b1b1b",
-    topBarBorder: "#2c2c2c",
-    button: "#2b2b2b",
-    buttonBorder: "#444",
-    text: "#f1f1f1",
-    dimText: "#999",
-    holdButton: "#7a2224",
-    holdButtonActive: "#a62d30",
-    holdButtonDisabled: "#444",
-    panel: "#1f1f1f",
-    panelBorder: "#333",
-    inputBackground: "#ffffff",
+    topBarBorder: "#333333",
+    panel: "#1b1b1b",
+    panelBorder: "#333333",
+    buttonBorder: "#444444",
     green: "#2ecc71",
-    red: "#ff4d4d",
+    red: "#ff6b6b",
   },
 };
 
-export const MORSE_DIAGRAM_COLORS = {
-  light: {
-    stroke: "black",
-    fill: "white",
-    text: "black",
+export type AppColors = typeof COLORS.light;
 
-    active: "green",
-    path: "#b7f7b7",
-  },
-
-  dark: {
-    stroke: "#d8d8d8",
-    fill: "#1f1f1f",
-    text: "#f1f1f1",
-
-    active: "#2ecc71",
-    path: "#295c29",
-  },
+export const SPACING = {
+  xs: 4,
+  sm: 8,
+  md: 16,
+  lg: 24,
+  xl: 32,
 };
 
-export const SIZES = {
-  topButton: 48,
-  holdButton: 115,
-  statusCircle: 18,
+export const FONT_SIZE = {
+  sm: 12,
+  md: 16,
+  lg: 20,
+  xl: 24,
 };
 
-export const createGlobalStyles = (theme: typeof COLORS.light) =>
+export const RADIUS = {
+  sm: 8,
+  md: 12,
+  lg: 18,
+  round: 999,
+};
+
+export const createGlobalStyles = (colors: AppColors) =>
   StyleSheet.create({
-    container: {
+    // =========================
+    // SCREEN / LAYOUT
+    // =========================
+
+    // Βασικό wrapper για κάθε screen.
+    // Χρησιμοποιείται σε index.tsx, blackHole.tsx και μελλοντικά game screens.
+    screen: {
       flex: 1,
-      backgroundColor: theme.background,
+      backgroundColor: colors.background,
     },
 
-    topBar: {
+    // Κεντράρει περιεχόμενο οριζόντια και κάθετα.
+    // Χρήσιμο για home screen, empty states, simple menus.
+    centerContent: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: SPACING.md,
+    },
+
+    // Generic κεντράρισμα χωρίς flex: 1.
+    // Χρήσιμο μέσα σε cards, μικρά panels, button groups.
+    centered: {
+      justifyContent: "center",
+      alignItems: "center",
+    },
+
+    // Generic horizontal row.
+    // Χρήσιμο για labels + switch, icon + text, μικρά control rows.
+    row: {
       flexDirection: "row",
-      flexWrap: "wrap",
-      justifyContent: "center",
       alignItems: "center",
-      gap: 8,
-      paddingTop: 8,
-      paddingBottom: 6,
-      backgroundColor: theme.topBar,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.topBarBorder,
-      zIndex: 10,
-      elevation: 10,
+      gap: SPACING.sm,
     },
 
-    topButton: {
-      width: SIZES.topButton,
-      height: SIZES.topButton,
-      borderRadius: 10,
+    // =========================
+    // TYPOGRAPHY
+    // =========================
+
+    // Μεγάλος τίτλος screen ή card.
+    // Π.χ. "Game Settings", "Pen and Paper Games".
+    title: {
+      fontSize: FONT_SIZE.xl,
+      fontWeight: "bold",
+      color: colors.text,
+      textAlign: "center",
+    },
+
+    // Βασικό text style.
+    // Χρησιμοποιείται για απλό κείμενο σε screens/cards.
+    text: {
+      fontSize: FONT_SIZE.md,
+      color: colors.text,
+    },
+
+    // Δευτερεύον/βοηθητικό κείμενο.
+    // Π.χ. hints, descriptions, room status, μικρές σημειώσεις.
+    dimText: {
+      fontSize: FONT_SIZE.sm,
+      color: colors.dimText,
+    },
+
+    // Κεντραρισμένο απλό κείμενο.
+    // Χρήσιμο για messages, score summaries, empty states.
+    centeredText: {
+      textAlign: "center",
+      color: colors.text,
+    },
+
+    // =========================
+    // SURFACES / CARDS
+    // =========================
+
+    // Generic card/panel.
+    // Χρησιμοποιείται για settings panels, game info boxes, endgame panels.
+    card: {
+      backgroundColor: colors.surface,
       borderWidth: 1,
-      borderColor: theme.buttonBorder,
-      backgroundColor: theme.button,
+      borderColor: colors.border,
+      borderRadius: RADIUS.lg,
+      padding: SPACING.md,
+    },
+
+    // =========================
+    // PRIMARY BUTTONS
+    // =========================
+
+    // Μεγάλο βασικό κουμπί.
+    // Χρησιμοποιείται για κύριες ενέργειες: "Black Hole", "Play Again", "Start Game".
+    primaryButton: {
+      minWidth: 160,
+      paddingVertical: SPACING.sm,
+      paddingHorizontal: SPACING.lg,
+      borderRadius: RADIUS.md,
+      borderWidth: 1,
+      borderColor: colors.primary,
+      backgroundColor: colors.surface,
       justifyContent: "center",
       alignItems: "center",
     },
 
-    mainContent: {
-      flex: 1,
-      alignItems: "center",
-      justifyContent: "flex-start",
-      paddingBottom: 10,
-      paddingTop: 20,
+    // Active/selected κατάσταση για primary button.
+    // Χρήσιμο όταν ένα βασικό κουμπί λειτουργεί σαν selected option.
+    primaryButtonActive: {
+      backgroundColor: colors.primary,
+      borderColor: colors.primary,
     },
 
-    topArea: {
-      flex: 1,
-      width: "100%",
-      alignItems: "center",
-      justifyContent: "flex-start",
-      zIndex: 1,
-    },
-
-    mainText: {
-      fontSize: 18,
-      fontWeight: "bold",
-      textAlign: "center",
-      color: theme.text,
-      minHeight: 24,
-    },
-
-    translatedText: {
-      fontSize: 22,
-      fontWeight: "bold",
-      textAlign: "center",
-      color: theme.text,
-      minHeight: 28,
-    },
-
-    smallText: {
-      fontSize: 12,
-      color: theme.dimText,
-    },
-
-    holdButton: {
-      width: SIZES.holdButton,
-      height: SIZES.holdButton,
-      borderRadius: SIZES.holdButton / 2,
-      backgroundColor: theme.holdButton,
-      justifyContent: "center",
-      alignItems: "center",
-      marginBottom: 20,
-    },
-
-    holdButtonDisabled: {
-      backgroundColor: theme.holdButtonDisabled,
-      opacity: 0.6,
-    },
-
-    holdButtonActive: {
-      backgroundColor: theme.holdButtonActive,
-      transform: [{ scale: 0.96 }],
-    },
-
-    holdButtonText: {
-      color: "#ffffff",
-      fontSize: 24,
-      fontWeight: "bold",
-      letterSpacing: 1,
-    },
-
-    buttonText: {
-      fontSize: 20,
-      fontWeight: "bold",
-      color: theme.text,
-    },
-
-    smallButtonText: {
-      fontSize: 13,
+    // Κείμενο primary button.
+    // Χρησιμοποιείται μέσα σε primaryButton.
+    primaryButtonText: {
+      fontSize: FONT_SIZE.lg,
       fontWeight: "700",
-      color: theme.text,
+      color: colors.text,
     },
 
-    roomInput: {
-      width: 70,
-      height: 48,
-      borderRadius: 10,
+    // Κείμενο primary button όταν είναι active.
+    // Συνήθως άσπρο πάνω σε primary background.
+    primaryButtonTextActive: {
+      color: "#ffffff",
+    },
+
+    // =========================
+    // SECONDARY BUTTONS
+    // =========================
+
+    // Μικρότερο/λιγότερο σημαντικό κουμπί.
+    // Χρήσιμο για cancel, reset, secondary actions, μικρά menu actions.
+    secondaryButton: {
+      minWidth: 120,
+      paddingVertical: SPACING.sm,
+      paddingHorizontal: SPACING.md,
+      borderRadius: RADIUS.md,
       borderWidth: 1,
-      borderColor: theme.buttonBorder,
-      backgroundColor: theme.inputBackground,
-      textAlign: "center",
-      fontSize: 16,
-      color: theme.text,
+      borderColor: colors.border,
+      backgroundColor: colors.surfaceAlt,
+      justifyContent: "center",
+      alignItems: "center",
     },
 
-    connectButton: {
-      width: 30,
-      height: 48,
-      borderRadius: 10,
+    // Κείμενο secondary button.
+    // Χρησιμοποιείται μέσα σε secondaryButton.
+    secondaryButtonText: {
+      fontSize: FONT_SIZE.md,
+      fontWeight: "600",
+      color: colors.text,
+    },
+
+    // =========================
+    // SEGMENTED BUTTONS
+    // =========================
+
+    // Μικρό option button για επιλογές τύπου 2P / 3P, Easy / Hard, Local / Online.
+    // Δεν είναι για κύρια actions.
+    segmentButton: {
+      minWidth: 58,
+      paddingVertical: SPACING.sm,
+      paddingHorizontal: SPACING.md,
+      borderRadius: RADIUS.round,
       borderWidth: 1,
-      borderColor: theme.buttonBorder,
-      backgroundColor: theme.button,
+      borderColor: colors.primary,
+      backgroundColor: colors.surface,
       justifyContent: "center",
       alignItems: "center",
     },
 
-    statusCircle: {
-      width: SIZES.statusCircle,
-      height: SIZES.statusCircle,
-      borderRadius: SIZES.statusCircle / 2,
-      borderWidth: 1,
-      borderColor: "#999",
+    // Active/selected κατάσταση για segmentButton.
+    // Π.χ. όταν είναι επιλεγμένο το 2P ή 3P.
+    segmentButtonActive: {
+      backgroundColor: colors.primary,
+      borderColor: colors.primary,
     },
 
-    socketRow: {
-      width: "100%",
-      flexDirection: "row",
-      justifyContent: "center",
-      alignItems: "center",
-      gap: 8,
+    // Κείμενο segmentButton.
+    // Χρησιμοποιείται σε μικρά option buttons.
+    segmentButtonText: {
+      fontSize: FONT_SIZE.md,
+      fontWeight: "700",
+      color: colors.text,
     },
 
-    textRow: {
-      width: "100%",
-      flexDirection: "row",
-      justifyContent: "space-evenly",
-      alignItems: "flex-start",
-      paddingHorizontal: 10,
-      marginBottom: 10,
-    },
-
-    incomingSmall: {
-      fontSize: 12,
-      color: theme.dimText,
-    },
-
-    incomingText: {
-      fontSize: 15,
-      color: theme.text,
-      textAlign: "center",
-    },
-
-    incomingTranslated: {
-      fontSize: 20,
-      fontWeight: "bold",
-      color: theme.text,
-    },
-
-    messagePanel: {
-      width: "46%",
-      padding: 3,
-      borderRadius: 12,
-      backgroundColor: theme.panel,
-      borderWidth: 1,
-      borderColor: theme.panelBorder,
-      alignItems: "center",
-      minHeight: 50,
-    },
-    bottomControls: {
-      width: "100%",
-      flexDirection: "row",
-      justifyContent: "center",
-      alignItems: "center",
-      marginBottom: 80,
-    },
-
-    sideButtons: {
-      width: 70,
-      justifyContent: "center",
-      alignItems: "center",
-      gap: 12,
-    },
-
-    sideButton: {
-      width: 44,
-      height: 44,
-      borderRadius: 22,
-      borderWidth: 1,
-      borderColor: theme.buttonBorder,
-      backgroundColor: theme.button,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-
-    sendButton: {
-      width: 48,
-      height: 48,
-      borderRadius: 24,
-      backgroundColor: theme.holdButton,
-      justifyContent: "center",
-      alignItems: "center",
+    // Κείμενο segmentButton όταν είναι active.
+    // Συνήθως άσπρο πάνω σε primary background.
+    segmentButtonTextActive: {
+      color: "#ffffff",
     },
   });

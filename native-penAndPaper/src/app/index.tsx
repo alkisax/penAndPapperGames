@@ -1,10 +1,16 @@
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native'
+import { useContext } from 'react'
+import { View, Pressable, Text } from 'react-native'
 import { router } from 'expo-router'
 import Navbar from '@/layout/Navbar'
+import { ThemeContext } from '@/context/ThemeContext'
+import { createGlobalStyles } from '@/styles/global'
 
 export default function Index() {
+  const { colors } = useContext(ThemeContext)
+  const globalStyles = createGlobalStyles(colors)
+
   return (
-    <>
+    <View style={globalStyles.screen}>
       <Navbar
         roomId=''
         setRoomId={() => { }}
@@ -13,34 +19,16 @@ export default function Index() {
         hasPeer={false}
       />
 
-      <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.button}
+      <View style={globalStyles.centerContent}>
+        <Pressable
+          style={globalStyles.primaryButton}
           onPress={() => router.push('/blackHole/blackHole')}
         >
-          <Text style={styles.buttonText}>
+          <Text style={globalStyles.primaryButtonText}>
             Black Hole
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
-    </>
-
+    </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  button: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderRadius: 8,
-  },
-  buttonText: {
-    fontSize: 18,
-  },
-})

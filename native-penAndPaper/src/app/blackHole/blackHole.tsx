@@ -1,13 +1,27 @@
 // src/app/blackHole/blackHole.tsx
-import { View, StyleSheet, Button, Text, Switch } from 'react-native'
+import {
+  View,
+  Button,
+  Text,
+  Switch,
+  Pressable,
+  ScrollView,
+} from 'react-native'
 import BlackHoleBoard from '@/components/svg/blackHoleBoard'
 import Navbar from '@/layout/Navbar'
 import { useBlackHole } from '@/hooks/useBlackHole'
-import { useState } from 'react'
+import { useState, useContext } from 'react'
+import { createBlackHoleStyles } from '@/styles/blackHole.styles'
+import { ThemeContext } from '@/context/ThemeContext'
+import { createGlobalStyles } from '@/styles/global'
 
 const BlackHole = () => {
-
   const [numberOfPlayers, setNumberOfPlayers] = useState(2)
+
+  const { colors } = useContext(ThemeContext)
+
+  const styles = createBlackHoleStyles(colors)
+  const globalStyles = createGlobalStyles(colors)
 
   const {
     currentPlayer,
@@ -24,7 +38,7 @@ const BlackHole = () => {
   })
 
   return (
-    <>
+    <View style={styles.screen}>
       <Navbar
         // minimal
         roomId=''
@@ -34,92 +48,117 @@ const BlackHole = () => {
         hasPeer={false}
       />
 
-      <View style={styles.controls}>
-        <Button
-          title='2 Players'
-          onPress={() => setNumberOfPlayers(2)}
-        />
-
-        <Button
-          title='3 Players'
-          onPress={() => setNumberOfPlayers(3)}
-        />
-      </View>
-
-      <View style={styles.controls}>
-        <Text>Play against AI</Text>
-
-        <Switch
-          value={isPlayer2Ai}
-          onValueChange={(value) => {
-            setIsPlayer2Ai(value)
-            console.log(
-              `Player 2 is AI: ${value}`,
-            )
-          }}
-        />
-      </View>
-
-      <Text style={styles.playerText}>
-        Now Playing: Player {currentPlayer}
-      </Text>
-
-      {gameOver && (
-        <>
-          <Text style={styles.playerText}>
-            Winner{winners.length > 1 ? 's' : ''}: Player{' '}
-            {winners.join(', Player ')}
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.settingsCard}>
+          <Text style={styles.settingsTitle}>
+            Game Settings
           </Text>
 
-          <Text style={styles.playerText}>
-            Player 1 Score: {scores.player1}
-          </Text>
-
-          <Text style={styles.playerText}>
-            Player 2 Score: {scores.player2}
-          </Text>
-
-          {numberOfPlayers === 3 && (
-            <Text style={styles.playerText}>
-              Player 3 Score: {scores.player3}
+          <View style={styles.settingRow}>
+            <Text style={styles.settingLabel}>
+              Players
             </Text>
-          )}
 
-          <Button
-            title='Play Again'
-            onPress={playAgain}
+            <View style={styles.segmentedRow}>
+              <Pressable
+                style={[
+                  globalStyles.segmentButton,
+                  numberOfPlayers === 2 && globalStyles.segmentButtonActive,
+                ]}
+                onPress={() => setNumberOfPlayers(2)}
+              >
+                <Text
+                  style={[
+                    globalStyles.segmentButtonText,
+                    numberOfPlayers === 2 && globalStyles.segmentButtonTextActive,
+                  ]}
+                >
+                  2P
+                </Text>
+              </Pressable>
+
+              <Pressable
+                style={[
+                  globalStyles.segmentButton,
+                  numberOfPlayers === 3 && globalStyles.segmentButtonActive,
+                ]}
+                onPress={() => setNumberOfPlayers(3)}
+              >
+                <Text
+                  style={[
+                    globalStyles.segmentButtonText,
+                    numberOfPlayers === 3 && globalStyles.segmentButtonTextActive,
+                  ]}
+                >
+                  3P
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+
+          <View style={styles.settingRow}>
+            <Text style={styles.settingLabel}>
+              Play against AI
+            </Text>
+
+            <Switch
+              value={isPlayer2Ai}
+              onValueChange={setIsPlayer2Ai}
+              trackColor={{
+                false: colors.switchTrackOff,
+                true: colors.switchTrackOn,
+              }}
+              thumbColor={colors.switchThumb}
+            />
+          </View>
+        </View>
+
+        <Text style={styles.playerText}>
+          Now Playing: Player {currentPlayer}
+        </Text>
+
+        {gameOver && (
+          <View style={styles.endGamePanel}>
+            <Text style={styles.playerText}>
+              Winner{winners.length > 1 ? 's' : ''}: Player{' '}
+              {winners.join(', Player ')}
+            </Text>
+
+            <Text style={styles.scoreText}>
+              Player 1 Score: {scores.player1}
+            </Text>
+
+            <Text style={styles.scoreText}>
+              Player 2 Score: {scores.player2}
+            </Text>
+
+            {numberOfPlayers === 3 && (
+              <Text style={styles.scoreText}>
+                Player 3 Score: {scores.player3}
+              </Text>
+            )}
+
+            <Button
+              title='Play Again'
+              onPress={playAgain}
+            />
+          </View>
+        )}
+
+        <View style={styles.boardContainer}>
+          <BlackHoleBoard
+            handleCellPress={handleCellPress}
+            cells={cells}
           />
-        </>
-      )}
+        </View>
+      </ScrollView>
 
-      <View style={styles.container}>
-        <BlackHoleBoard
-          handleCellPress={handleCellPress}
-          cells={cells}
-        />
-      </View>
-    </>
 
+    </View>
   )
 }
 
 export default BlackHole
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  controls: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 20,
-  },
-
-  playerText: {
-    fontSize: 20,
-    marginBottom: 20,
-  },
-})
