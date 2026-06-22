@@ -10,10 +10,11 @@ import {
 import BlackHoleBoard from '@/components/svg/blackHoleBoard'
 import Navbar from '@/layout/Navbar'
 import { useBlackHole } from '@/hooks/useBlackHole'
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { createBlackHoleStyles } from '@/styles/blackHole.styles'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
+import { logToServer } from '@/utils/logToServer'
 
 const BlackHole = () => {
   const [numberOfPlayers, setNumberOfPlayers] = useState(2)
@@ -36,6 +37,10 @@ const BlackHole = () => {
   } = useBlackHole({
     numberOfPlayers,
   })
+
+  useEffect(() => {
+    logToServer('test from Black Hole screen')
+  },[])
 
   return (
     <View style={styles.screen}>

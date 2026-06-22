@@ -1,8 +1,10 @@
 // native-penAndPaper\src\constants\constants.ts
-export const backendUrl = "https://morse.portfolio-projects.space";
-// export const SOCKET_URL = 'http://172.16.173.241:3015';
-export const SOCKET_URL = 'https://morse.portfolio-projects.space';
-export const SIGNALR_URL = 'https://morse-dotnet.portfolio-projects.space/morse'
+export const backendUrl =
+  'https://signalr-room-relay.portfolio-projects.space'
+export const SIGNALR_URL =
+  'https://signalr-room-relay.portfolio-projects.space/room'
+export const SOCKET_URL =
+  'https://signalr-room-relay.portfolio-projects.space'
 
 export const appName = 'Pen and Paper games'
 
