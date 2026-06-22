@@ -26,7 +26,7 @@ const BlackHole = () => {
   return (
     <>
       <Navbar
-        minimal
+        // minimal
         roomId=''
         setRoomId={() => { }}
         handleConnectSocket={async () => { }}
@@ -45,7 +45,7 @@ const BlackHole = () => {
           onPress={() => setNumberOfPlayers(3)}
         />
       </View>
-      
+
       <View style={styles.controls}>
         <Text>Play against AI</Text>
 
