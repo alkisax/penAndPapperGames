@@ -52,9 +52,25 @@ const BlackHole = () => {
     hasPeer,
     connectToChatRoom,
     disconnectFromChatRoom,
+    sendRoomEvent,
   } = useRoomContext()
 
   const blackHoleRoomId = getGameRoomId('blackHole')
+
+  const handleSendBlackHoleTest = async () => {
+    console.log('pressed Send BH Test')
+
+    await sendRoomEvent({
+      type: 'BLACK_HOLE_TEST',
+      payload: {
+        text: 'hello from black hole',
+        roomCode,
+        blackHoleRoomId,
+      },
+    })
+
+    console.log('sent BLACK_HOLE_TEST')
+  }
 
   const setPlayerController = (
     player: keyof PlayerControllers,
@@ -78,6 +94,16 @@ const BlackHole = () => {
         isConnected={isConnected}
         hasPeer={hasPeer}
       />
+
+      <Pressable
+        style={globalStyles.secondaryButton}
+        onPress={handleSendBlackHoleTest}
+        disabled={!isConnected}
+      >
+        <Text style={globalStyles.secondaryButtonText}>
+          Send BH Test
+        </Text>
+      </Pressable>
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}

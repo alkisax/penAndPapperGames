@@ -18,7 +18,7 @@ import { logToServer } from '@/utils/logToServer'
 
 type GameKey = 'blackHole' | 'ticTacToe'
 
-type RoomEvent = {
+export type RoomEvent = {
   type: string
   payload: unknown
 }
@@ -32,29 +32,23 @@ export type ChatMessage = {
 type RoomContextValue = {
   roomCode: string
   setRoomCode: Dispatch<SetStateAction<string>>
-
   isConnected: boolean
   setIsConnected: Dispatch<SetStateAction<boolean>>
-
   hasPeer: boolean
   setHasPeer: Dispatch<SetStateAction<boolean>>
-
   connection: signalR.HubConnection | null
-
   connectToChatRoom: () => Promise<void>
   disconnectFromChatRoom: () => Promise<void>
-
   getGameRoomId: (gameKey: GameKey) => string
   getChatRoomId: () => string
-
   username: string
   setUsername: Dispatch<SetStateAction<string>>
-
   chatMessages: ChatMessage[]
   sendChatMessage: (text: string) => Promise<void>
+  incomingRoomEvent: RoomEvent | null
+  setIncomingRoomEvent: Dispatch<SetStateAction<RoomEvent | null>>
+  sendRoomEvent: (event: RoomEvent) => Promise<void>
 }
-
-
 
 const RoomContext =
   createContext<RoomContextValue | null>(null)
@@ -69,7 +63,6 @@ const createGuestUsername = () => {
     .random()
     .toString(36)
     .slice(2, 8)
-
   return `user-${randomPart}`
 }
 
@@ -79,24 +72,18 @@ export const RoomProvider = ({
   const [roomCode, setRoomCode] = useState('')
   const [isConnected, setIsConnected] = useState(false)
   const [hasPeer, setHasPeer] = useState(false)
-
   const [connection, setConnection] = useState<signalR.HubConnection | null>(null)
-
   const [username, setUsername] = useState(createGuestUsername)
-
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
-
+  const [incomingRoomEvent, setIncomingRoomEvent] = useState<RoomEvent | null>(null)
   const getGameRoomId = (gameKey: GameKey) => {
     const cleanRoomCode = roomCode.trim()
-
     if (!cleanRoomCode) {
       return ''
     }
-
     if (gameKey === 'blackHole') {
       return `penAndPaper-bh-${cleanRoomCode}`
     }
-
     return `penAndPaper-ttt-${cleanRoomCode}`
   }
 
@@ -164,6 +151,8 @@ export const RoomProvider = ({
         const event = JSON.parse(message) as RoomEvent
 
         if (event.type !== 'CHAT_MESSAGE') {
+          console.log('incoming room event:', event)
+          setIncomingRoomEvent(event)
           return
         }
 
@@ -214,6 +203,43 @@ export const RoomProvider = ({
     }
   }
 
+  const sendRoomEvent = async (
+    event: RoomEvent,
+  ) => {
+    if (!connection) {
+      console.log('no connection')
+      return
+    }
+
+    const roomId = getChatRoomId()
+
+    if (!roomId) {
+      console.log('no room')
+      return
+    }
+
+    try {
+      console.log('sending room event:', roomId, event)
+
+      await connection.invoke(
+        'SendToRoom',
+        roomId,
+        JSON.stringify(event),
+      )
+
+      console.log('room event sent')
+    } catch (err) {
+      if (err instanceof Error) {
+        logToServer(
+          `SEND_ROOM_EVENT_ERROR: ${err.message}`,
+        )
+        return
+      }
+
+      logToServer('SEND_ROOM_EVENT_UNKNOWN_ERROR')
+    }
+  }
+
   const sendChatMessage = async (
     text: string,
   ) => {
@@ -247,11 +273,7 @@ export const RoomProvider = ({
     }
 
     try {
-      await connection.invoke(
-        'SendToRoom',
-        chatRoomId,
-        JSON.stringify(event),
-      )
+      await sendRoomEvent(event)
 
       // Επειδή το backend στέλνει στους OthersInGroup,
       // ο sender δεν παίρνει πίσω το δικό του μήνυμα.
@@ -309,26 +331,22 @@ export const RoomProvider = ({
       value={{
         roomCode,
         setRoomCode,
-
         isConnected,
         setIsConnected,
-
         hasPeer,
         setHasPeer,
-
         connection,
-
         connectToChatRoom,
         disconnectFromChatRoom,
-
         getGameRoomId,
         getChatRoomId,
-
         username,
         setUsername,
-
         chatMessages,
         sendChatMessage,
+        incomingRoomEvent,
+        setIncomingRoomEvent,
+        sendRoomEvent,
       }}
     >
       {children}
