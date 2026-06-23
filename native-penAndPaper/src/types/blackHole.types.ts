@@ -10,3 +10,11 @@ export type Cell = {
 }
 
 export type NumberOfPlayers = 1 | 2 | 3
+
+export type PlayerController = 'local' | 'ai' | 'remote'
+
+export type PlayerControllers = {
+  player1: PlayerController
+  player2: PlayerController
+  player3: PlayerController
+}
