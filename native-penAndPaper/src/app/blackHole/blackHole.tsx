@@ -14,6 +14,7 @@ import { useState, useContext, useEffect } from 'react'
 import { createBlackHoleStyles } from '@/styles/blackHole.styles'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
+import { useRoomContext } from '@/context/RoomContext'
 import { logToServer } from '@/utils/logToServer'
 
 const BlackHole = () => {
@@ -38,19 +39,35 @@ const BlackHole = () => {
     numberOfPlayers,
   })
 
-  useEffect(() => {
-    logToServer('test from Black Hole screen')
-  },[])
+  // useEffect(() => {
+  //   logToServer('test from Black Hole screen')
+  // },[])
+
+  const {
+    roomCode,
+    setRoomCode,
+    username,
+    setUsername,
+    getGameRoomId,
+    isConnected,
+    hasPeer,
+    connectToChatRoom,
+    disconnectFromChatRoom,
+  } = useRoomContext()
+
+  const blackHoleRoomId = getGameRoomId('blackHole')
 
   return (
     <View style={styles.screen}>
       <Navbar
-        // minimal
-        roomId=''
-        setRoomId={() => { }}
-        handleConnectSocket={async () => { }}
-        isConnected={false}
-        hasPeer={false}
+        roomId={roomCode}
+        setRoomId={setRoomCode}
+        username={username}
+        setUsername={setUsername}
+        handleConnectSocket={connectToChatRoom}
+        handleDisconnectSocket={disconnectFromChatRoom}
+        isConnected={isConnected}
+        hasPeer={hasPeer}
       />
 
       <ScrollView

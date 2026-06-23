@@ -2,15 +2,18 @@
 
 import { Stack } from 'expo-router'
 import { ThemeProvider } from '@/context/ThemeContext'
+import { RoomProvider } from '@/context/RoomContext'
 
 export default function RootLayout() {
   return (
     <ThemeProvider>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      />
+      <RoomProvider>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+        />
+      </RoomProvider>
     </ThemeProvider>
   )
 }

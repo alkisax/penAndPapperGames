@@ -2,7 +2,7 @@
 
 import { View, Text, Pressable, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemeContext } from '../context/ThemeContext';
@@ -11,14 +11,19 @@ import { appName } from '@/constants/constants';
 // import MorseSettings from '@/components/MorseSettings';
 import MoonToggleIcon from '@/components/ui/MoonToggleIcon';
 import SunToggleIcon from '@/components/ui/SunToggleIcon';
+import ChatBox from '@/components/chat/ChatBox'
+import { useRoomContext } from '@/context/RoomContext';
 
 type Props = {
   minimal?: boolean;
   roomId: string;
   setRoomId: (v: string) => void;
   handleConnectSocket: () => Promise<void>;
+  handleDisconnectSocket: () => Promise<void>;
   isConnected: boolean;
   hasPeer: boolean;
+  username?: string;
+  setUsername?: (v: string) => void;
 };
 
 const Navbar = ({
@@ -26,8 +31,11 @@ const Navbar = ({
   roomId,
   setRoomId,
   handleConnectSocket,
+  handleDisconnectSocket,
   isConnected,
   hasPeer,
+  username,
+  setUsername,
 }: Props) => {
   const { colors, toggle, theme } = useContext(ThemeContext);
 
@@ -37,6 +45,37 @@ const Navbar = ({
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [showMorseSettings, setShowMorseSettings] = useState(false);
+  const [showChatBox, setShowChatBox] = useState(false)
+  const [hasUnreadChat, setHasUnreadChat] = useState(false)
+
+  const lastMessageCountRef = useRef(0)
+
+  const {
+    chatMessages,
+    username: contextUsername,
+  } = useRoomContext()
+
+  useEffect(() => {
+    if (chatMessages.length <= lastMessageCountRef.current) {
+      lastMessageCountRef.current = chatMessages.length
+      return
+    }
+
+    const lastMessage = chatMessages[chatMessages.length - 1]
+
+    if (
+      !showChatBox &&
+      lastMessage.username !== contextUsername
+    ) {
+      setHasUnreadChat(true)
+    }
+
+    lastMessageCountRef.current = chatMessages.length
+  }, [
+    chatMessages,
+    contextUsername,
+    showChatBox,
+  ])
 
   if (minimal) {
     return (
@@ -87,6 +126,46 @@ const Navbar = ({
 
         <View style={{ flex: 1 }} />
 
+        {/* chat */}
+        <Pressable
+          onPress={() => {
+            setShowChatBox((prev) => {
+              const nextValue = !prev
+
+              if (nextValue) {
+                setHasUnreadChat(false)
+              }
+
+              return nextValue
+            })
+
+            setMenuOpen(false)
+          }}
+          style={styles.iconButton}
+        >
+          <View>
+            <Ionicons
+              name={
+                showChatBox
+                  ? 'chatbubble'
+                  : 'chatbubble-outline'
+              }
+              size={26}
+              color={colors.text}
+            />
+
+            {hasUnreadChat && (
+              <View style={styles.chatBadge} />
+            )}
+          </View>
+        </Pressable>
+
+        {showChatBox && (
+          <View style={styles.chatPanel}>
+            <ChatBox />
+          </View>
+        )}
+
         {/* hamburger */}
         <Pressable
           onPress={() =>
@@ -120,11 +199,12 @@ const Navbar = ({
 
         {/* dropdown */}
         {/* το πρώτο menuOpen && είναι για να κλίνει το menu αν πατήσω εκτος */}
-        {menuOpen && (
+        {(menuOpen || showChatBox) && (
           <Pressable
             onPress={() => {
               setMenuOpen(false);
               setShowMorseSettings(false);
+              setShowChatBox(false)
             }}
             style={styles.overlay}
           />
@@ -168,6 +248,16 @@ const Navbar = ({
 
             </View>
 
+            {username !== undefined && setUsername && (
+              <TextInput
+                value={username}
+                onChangeText={setUsername}
+                placeholder="Username"
+                placeholderTextColor={colors.dimText}
+                style={styles.usernameInput}
+                maxLength={20}
+              />
+            )}
 
             {/* socket row */}
             <View style={styles.socketRow}>
@@ -178,17 +268,25 @@ const Navbar = ({
                 keyboardType="number-pad"
                 placeholder="Room"
                 placeholderTextColor={colors.dimText}
-                style={styles.roomInput}
+                style={[
+                  styles.roomInput,
+                  isConnected && styles.roomInputDisabled,
+                ]}
                 maxLength={4}
+                editable={!isConnected}
               />
 
               {/* connect */}
               <Pressable
-                onPress={handleConnectSocket}
+                onPress={
+                  isConnected
+                    ? handleDisconnectSocket
+                    : handleConnectSocket
+                }
                 style={styles.iconButton}
               >
                 <Text style={{ fontSize: 18 }}>
-                  🔌
+                  {isConnected ? '❌' : '🔌'}
                 </Text>
               </Pressable>
 
@@ -340,5 +438,44 @@ const createStyles = (
       right: 0,
       bottom: -1000,
       zIndex: 998,
+    },
+
+    roomInputDisabled: {
+      opacity: 0.5,
+    },
+
+    usernameInput: {
+      height: 40,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.buttonBorder,
+      backgroundColor: '#ffffff',
+      color: '#030303',
+      fontSize: 16,
+      paddingHorizontal: 8,
+    },
+
+    chatPanel: {
+      position: 'absolute',
+      right: 8,
+      top: 52,
+      width: 320,
+      maxWidth: '95%',
+      backgroundColor: colors.panel,
+      borderRadius: 16,
+      padding: 8,
+      borderWidth: 1,
+      borderColor: colors.panelBorder,
+      zIndex: 999,
+      elevation: 999,
+    },
+
+    chatBadge: {
+      position: 'absolute',
+      top: -2,
+      right: -2,
+      width: 9,
+      height: 9,
+      borderRadius: 5,
+      backgroundColor: colors.red,
     },
   });

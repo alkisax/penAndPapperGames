@@ -10,6 +10,7 @@ const Info = () => {
         roomId=''
         setRoomId={() => { }}
         handleConnectSocket={async () => { }}
+         handleDisconnectSocket={async () => {}}
         isConnected={false}
         hasPeer={false}
       />
