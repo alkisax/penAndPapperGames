@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useRef,
+  useState,
 } from 'react'
 
 import { useRoomContext } from '@/context/RoomContext'
@@ -50,6 +51,7 @@ const isPferdApfelResetPayload = (
 }
 
 export const usePferdApfelMultiplayer = () => {
+  const [isRedAi, setIsRedAi] = useState(false)
   const previousRoomUsersCountRef = useRef(0)
 
   const {
@@ -68,6 +70,26 @@ export const usePferdApfelMultiplayer = () => {
     roomUsersCount,
   } = useRoomContext()
 
+  const handleAiMoveBroadcast = useCallback(async (
+    row: number,
+    col: number,
+    id: number,
+  ) => {
+    if (!isConnected) return
+
+    await sendRoomEvent({
+      type: 'PFERD_APFEL_MOVE',
+      payload: {
+        row,
+        col,
+        id,
+      },
+    })
+  }, [
+    isConnected,
+    sendRoomEvent,
+  ])
+
   const {
     currentPlayer,
     knights,
@@ -76,7 +98,10 @@ export const usePferdApfelMultiplayer = () => {
     gameOver,
     handleCellPress,
     restartGame,
-  } = usePferdApfel()
+  } = usePferdApfel({
+    isRedAi: !isConnected && isRedAi,
+    onAiMove: handleAiMoveBroadcast,
+  })
 
   // Μεταφράζουμε το currentPlayer του παιχνιδιού
   // σε player slot του RoomContext.
@@ -283,5 +308,7 @@ export const usePferdApfelMultiplayer = () => {
 
     handlePferdApfelCellPress,
     handleResetGame,
+    isRedAi,
+    setIsRedAi,
   }
 }

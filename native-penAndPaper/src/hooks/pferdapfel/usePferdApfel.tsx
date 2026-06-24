@@ -1,37 +1,27 @@
 // native-penAndPaper/src/hooks/pferdapfel/usePferdApfel.tsx
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getNextPlayer, getRemainingMoves, isBlockedCell, isLegalKnightMove, isSamePosition, } from '@/utils/pferdapfelUtils/pferdApfelUtils'
+import type { BlockedCell, Knight, PlayerColor, Position, } from '@/utils/pferdapfelUtils/pferdApfelUtils'
+import { suggestPferdApfelMove } from '@/utils/pferdapfelUtils/suggestPferdApfelMove'
 
-import {
-  getNextPlayer,
-  getRemainingMoves,
-  isBlockedCell,
-  isLegalKnightMove,
-  isSamePosition,
-} from '@/utils/pferdapfelUtils/pferdApfelUtils'
+type Props = {
+  isRedAi?: boolean
+  onAiMove?: (row: number, col: number, id: number) => Promise<void> | void
+}
 
-import type {
-  BlockedCell,
-  Knight,
-  PlayerColor,
-  Position,
-} from '@/utils/pferdapfelUtils/pferdApfelUtils'
-
-export const usePferdApfel = () => {
+export const usePferdApfel = ({
+  isRedAi = false,
+  onAiMove,
+}: Props = {}) => {
   const [currentPlayer, setCurrentPlayer] =
     useState<PlayerColor>('blue')
 
   const [bluePosition, setBluePosition] =
-    useState<Position>({
-      row: 7,
-      col: 0,
-    })
+    useState<Position>({ row: 7, col: 0, })
 
   const [redPosition, setRedPosition] =
-    useState<Position>({
-      row: 0,
-      col: 7,
-    })
+    useState<Position>({ row: 0, col: 7, })
 
   const [blockedCells, setBlockedCells] =
     useState<BlockedCell[]>([])
@@ -56,6 +46,13 @@ export const usePferdApfel = () => {
       color: 'red',
     },
   ]
+
+  const getCellId = (
+    row: number,
+    col: number,
+  ) => {
+    return row * 8 + col + 1
+  }
 
   const handleCellPress = (
     row: number,
@@ -187,6 +184,51 @@ export const usePferdApfel = () => {
     setWinner(null)
     setGameOver(false)
   }
+
+  useEffect(() => {
+    if (!isRedAi) return
+    if (gameOver) return
+    if (currentPlayer !== 'red') return
+
+    const suggestedMove = suggestPferdApfelMove({
+      currentPosition: redPosition,
+      opponentPosition: bluePosition,
+      blockedCells,
+    })
+
+    if (!suggestedMove) return
+
+    const timeoutId = setTimeout(() => {
+      const id = getCellId(
+        suggestedMove.row,
+        suggestedMove.col,
+      )
+
+      const moveWasApplied = handleCellPress(
+        suggestedMove.row,
+        suggestedMove.col,
+        id,
+      )
+
+      if (moveWasApplied) {
+        onAiMove?.(
+          suggestedMove.row,
+          suggestedMove.col,
+          id,
+        )
+      }
+    }, 500)
+
+    return () => clearTimeout(timeoutId)
+  }, [
+    isRedAi,
+    gameOver,
+    currentPlayer,
+    redPosition,
+    bluePosition,
+    blockedCells,
+    onAiMove,
+  ])
 
   return {
     currentPlayer,
