@@ -66,15 +66,8 @@ export const useBlackHole = ({
     return () => clearTimeout(timeoutId);
   }, [currentPlayer, playerControllers, gameOver, cells]);
 
-  const handleCellPress = (cellId: number) => {
-    if (gameOver) return;
-
-    const currentPlayerController = getCurrentPlayerController();
-
-    if (currentPlayerController === "remote") {
-      console.log(`Player ${currentPlayer} is remote`);
-      return;
-    }
+  const applyMove = (cellId: number) => {
+    if (gameOver) return false;
 
     let value = player1Value;
 
@@ -86,8 +79,8 @@ export const useBlackHole = ({
 
     const selectedCell = cells.find((cell) => cell.id === cellId);
 
-    if (!selectedCell) return;
-    if (selectedCell.owner !== null) return;
+    if (!selectedCell) return false;
+    if (selectedCell.owner !== null) return false;
 
     const updatedCells = cells.map((cell) => {
       if (cell.id !== cellId) return cell;
@@ -149,7 +142,25 @@ export const useBlackHole = ({
     } else {
       nextPlayer = currentPlayer === 1 ? 2 : 1;
     }
+
     setCurrentPlayer(nextPlayer);
+
+    return true;
+  };
+
+  const handleCellPress = (cellId: number) => {
+    const currentPlayerController = getCurrentPlayerController();
+
+    if (currentPlayerController === "remote") {
+      console.log(`Player ${currentPlayer} is remote`);
+      return false;
+    }
+
+    return applyMove(cellId);
+  };
+
+  const handleRemoteCellPress = (cellId: number) => {
+    return applyMove(cellId);
   };
 
   const playAgain = () => {
@@ -166,6 +177,7 @@ export const useBlackHole = ({
   return {
     currentPlayer,
     handleCellPress,
+    handleRemoteCellPress,
     cells,
     winners,
     gameOver,

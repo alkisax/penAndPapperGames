@@ -1,22 +1,15 @@
 // src/context/RoomContext.tsx
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from 'react'
-import type {
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-} from 'react'
+import { createContext, useContext, useEffect, useRef, useState, } from 'react'
+import type { Dispatch, ReactNode, SetStateAction, } from 'react'
 import * as signalR from '@microsoft/signalr'
 
 import { SIGNALR_URL } from '@/constants/constants'
 import { logToServer } from '@/utils/logToServer'
 
 type GameKey = 'blackHole' | 'ticTacToe'
+
+export type RoomPlayerSlot = 1 | 2 | 3 | 'waiting' | null
 
 export type RoomEvent = {
   type: string
@@ -48,6 +41,7 @@ type RoomContextValue = {
   incomingRoomEvent: RoomEvent | null
   setIncomingRoomEvent: Dispatch<SetStateAction<RoomEvent | null>>
   sendRoomEvent: (event: RoomEvent) => Promise<void>
+  localPlayer: RoomPlayerSlot
 }
 
 const RoomContext =
@@ -76,6 +70,13 @@ export const RoomProvider = ({
   const [username, setUsername] = useState(createGuestUsername)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [incomingRoomEvent, setIncomingRoomEvent] = useState<RoomEvent | null>(null)
+
+  const [localPlayer, setLocalPlayer] =
+    useState<RoomPlayerSlot>(null)
+
+  // Το ref κρατάει την τιμή μέσα στα SignalR callbacks. Έτσι δεν ξαναγράφεται ο player όταν αλλάζει το RoomUsers count.
+  const localPlayerRef = useRef<RoomPlayerSlot>(null)
+
   const getGameRoomId = (gameKey: GameKey) => {
     const cleanRoomCode = roomCode.trim()
     if (!cleanRoomCode) {
@@ -118,6 +119,31 @@ export const RoomProvider = ({
     newConnection.on('RoomUsers', (count: number) => {
       console.log('RoomUsers:', count)
       setHasPeer(count >= 2)
+
+      // Μόνο την πρώτη φορά που μπαίνει αυτό το tab στο room
+      // αποφασίζουμε ποιος player είναι.
+      if (localPlayerRef.current !== null) return
+
+      if (count === 1) {
+        localPlayerRef.current = 1
+        setLocalPlayer(1)
+        return
+      }
+
+      if (count === 2) {
+        localPlayerRef.current = 2
+        setLocalPlayer(2)
+        return
+      }
+
+      if (count === 3) {
+        localPlayerRef.current = 3
+        setLocalPlayer(3)
+        return
+      }
+
+      localPlayerRef.current = 'waiting'
+      setLocalPlayer('waiting')
     })
 
     newConnection.onreconnecting((err) => {
@@ -138,6 +164,8 @@ export const RoomProvider = ({
       setIsConnected(false)
       setHasPeer(false)
       setConnection(null)
+      setLocalPlayer(null)
+      localPlayerRef.current = null
 
       if (err) {
         logToServer(
@@ -318,6 +346,8 @@ export const RoomProvider = ({
     setConnection(null)
     setIsConnected(false)
     setHasPeer(false)
+    setLocalPlayer(null)
+    localPlayerRef.current = null
   }
 
   useEffect(() => {
@@ -347,6 +377,7 @@ export const RoomProvider = ({
         incomingRoomEvent,
         setIncomingRoomEvent,
         sendRoomEvent,
+        localPlayer,
       }}
     >
       {children}

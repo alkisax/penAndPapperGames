@@ -3,13 +3,27 @@ import { View, Button, Text, Pressable, ScrollView, } from 'react-native'
 import BlackHoleBoard from '@/components/svg/blackHoleBoard'
 import Navbar from '@/layout/Navbar'
 import { useBlackHole } from '@/hooks/useBlackHole'
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { createBlackHoleStyles } from '@/styles/blackHole.styles'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
 import { useRoomContext } from '@/context/RoomContext'
 import type { PlayerControllers } from '@/types/blackHole.types'
 import { logToServer } from '@/utils/logToServer'
+
+type BlackHoleMovePayload = {
+  cellId: number
+}
+
+const isBlackHoleMovePayload = (
+  payload: unknown,
+): payload is BlackHoleMovePayload => {
+  if (!payload || typeof payload !== 'object') return false
+
+  const data = payload as Record<string, unknown>
+
+  return typeof data.cellId === 'number'
+}
 
 const BlackHole = () => {
   const [numberOfPlayers, setNumberOfPlayers] = useState(2)
@@ -29,6 +43,7 @@ const BlackHole = () => {
     currentPlayer,
     cells,
     handleCellPress,
+    handleRemoteCellPress,
     winners,
     gameOver,
     playAgain,
@@ -38,48 +53,90 @@ const BlackHole = () => {
     playerControllers,
   })
 
-  // useEffect(() => {
-  //   logToServer('test from Black Hole screen')
-  // },[])
-
   const {
     roomCode,
     setRoomCode,
     username,
     setUsername,
-    getGameRoomId,
     isConnected,
     hasPeer,
     connectToChatRoom,
     disconnectFromChatRoom,
     sendRoomEvent,
+    incomingRoomEvent,
+    setIncomingRoomEvent,
+    localPlayer,
   } = useRoomContext()
 
-  const blackHoleRoomId = getGameRoomId('blackHole')
+  useEffect(() => {
+    if (!incomingRoomEvent) return
+    if (incomingRoomEvent.type !== 'BLACK_HOLE_MOVE') return
 
-  const handleSendBlackHoleTest = async () => {
-    console.log('pressed Send BH Test')
+    if (!isBlackHoleMovePayload(incomingRoomEvent.payload)) {
+      return
+    }
 
-    await sendRoomEvent({
-      type: 'BLACK_HOLE_TEST',
-      payload: {
-        text: 'hello from black hole',
-        roomCode,
-        blackHoleRoomId,
-      },
+    handleRemoteCellPress(incomingRoomEvent.payload.cellId)
+
+    setIncomingRoomEvent(null)
+  }, [
+    incomingRoomEvent,
+    handleRemoteCellPress,
+    setIncomingRoomEvent,
+  ])
+
+  useEffect(() => {
+    if (!isConnected) return
+    if (localPlayer === null) return
+
+    // Αν είμαι waiting, δεν ελέγχω κανέναν παίκτη.
+    if (localPlayer === 'waiting') {
+      setPlayerControllers({
+        player1: 'remote',
+        player2: 'remote',
+        player3: 'remote',
+      })
+      return
+    }
+
+    // Αυτό το tab ελέγχει μόνο τον δικό του player.
+    // Όλοι οι άλλοι είναι remote.
+    setPlayerControllers({
+      player1: localPlayer === 1 ? 'local' : 'remote',
+      player2: localPlayer === 2 ? 'local' : 'remote',
+      player3: localPlayer === 3 ? 'local' : 'remote',
     })
-
-    console.log('sent BLACK_HOLE_TEST')
-  }
+  }, [isConnected, localPlayer])
+  
 
   const setPlayerController = (
     player: keyof PlayerControllers,
     value: PlayerControllers[keyof PlayerControllers],
   ) => {
+    // Offline αφήνουμε manual local/ai/remote testing.
+    // Online οι ρόλοι βγαίνουν αυτόματα από το room join order.
+    if (isConnected) return
+
     setPlayerControllers((prev) => ({
       ...prev,
       [player]: value,
     }))
+  }
+
+  const handleBlackHoleCellPress = async (
+    cellId: number,
+  ) => {
+    const moveWasApplied = handleCellPress(cellId)
+
+    if (!moveWasApplied) return
+    if (!isConnected) return
+
+    await sendRoomEvent({
+      type: 'BLACK_HOLE_MOVE',
+      payload: {
+        cellId,
+      },
+    })
   }
 
   return (
@@ -94,16 +151,6 @@ const BlackHole = () => {
         isConnected={isConnected}
         hasPeer={hasPeer}
       />
-
-      <Pressable
-        style={globalStyles.secondaryButton}
-        onPress={handleSendBlackHoleTest}
-        disabled={!isConnected}
-      >
-        <Text style={globalStyles.secondaryButtonText}>
-          Send BH Test
-        </Text>
-      </Pressable>
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -282,7 +329,7 @@ const BlackHole = () => {
 
           <View style={styles.boardContainer}>
             <BlackHoleBoard
-              handleCellPress={handleCellPress}
+              handleCellPress={handleBlackHoleCellPress}
               cells={cells}
             />
           </View>
