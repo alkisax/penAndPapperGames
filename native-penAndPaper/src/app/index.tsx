@@ -49,6 +49,15 @@ export default function Index() {
             Black Hole
           </Text>
         </Pressable>
+
+        <Pressable
+          style={globalStyles.primaryButton}
+          onPress={() => router.push('/pferdapfel/pferdapfel')}
+        >
+          <Text style={globalStyles.primaryButtonText}>
+            Pferdappel
+          </Text>
+        </Pressable>
       </View>
     </View>
   )

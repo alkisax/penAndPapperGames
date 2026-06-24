@@ -105,6 +105,7 @@ export const createGlobalStyles = (colors: AppColors) =>
       justifyContent: "center",
       alignItems: "center",
       paddingHorizontal: SPACING.md,
+      gap: SPACING.md,
     },
 
     // Generic κεντράρισμα χωρίς flex: 1.

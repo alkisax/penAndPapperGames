@@ -1,13 +1,7 @@
 // native-penAndPaper/src/app/blackHole/blackHole.tsx
 
-import {
-  Button,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native'
-
+import { Button, Pressable, ScrollView, Text, View, } from 'react-native'
+import { router } from 'expo-router'
 import BlackHoleBoard from '@/components/svg/blackHoleBoard'
 import Navbar from '@/layout/Navbar'
 import { useBlackHoleMultiplayer } from '@/hooks/useBlackHoleMultiplayer'
@@ -68,6 +62,15 @@ const BlackHole = () => {
           <Text style={styles.settingsTitle}>
             Game Settings
           </Text>
+
+          <Pressable
+            style={globalStyles.secondaryButton}
+            onPress={() => router.push('/blackHole/blackHoleInfo')}
+          >
+            <Text style={globalStyles.text}>
+              Game Rules
+            </Text>
+          </Pressable>
 
           <View style={styles.settingRow}>
             <Text style={styles.settingLabel}>
