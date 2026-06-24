@@ -12,11 +12,13 @@ import { calculateBlackHoleResult } from "@/utils/blackHoleUtils/calculateBlackH
 type props = {
   numberOfPlayers: number;
   playerControllers: PlayerControllers;
+  onAiMove?: (cellId: number) => Promise<void> | void;
 };
 
 export const useBlackHole = ({
   numberOfPlayers = 2,
   playerControllers,
+  onAiMove,
 }: props) => {
   const [currentPlayer, setCurrentPlayer] = useState<NumberOfPlayers>(1);
   const [cells, setCells] = useState<Cell[]>(createBoard(numberOfPlayers));
@@ -60,11 +62,18 @@ export const useBlackHole = ({
     if (suggestedMove === null) return;
 
     const timeoutId = setTimeout(() => {
-      handleCellPress(suggestedMove);
+      // Το AI κάνει κανονικά move στο tab που το ελέγχει.
+      const moveWasApplied = handleCellPress(suggestedMove);
+
+      // Αν η AI κίνηση έγινε, ενημερώνουμε το screen
+      // για να τη στείλει μέσω SignalR στα άλλα tabs.
+      if (moveWasApplied) {
+        onAiMove?.(suggestedMove);
+      }
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [currentPlayer, playerControllers, gameOver, cells]);
+  }, [currentPlayer, playerControllers, gameOver, cells, onAiMove]);
 
   const applyMove = (cellId: number) => {
     if (gameOver) return false;

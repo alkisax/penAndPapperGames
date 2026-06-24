@@ -15,6 +15,12 @@ type BlackHoleMovePayload = {
   cellId: number
 }
 
+type BlackHoleSettingsPayload = {
+  numberOfPlayers: 2 | 3
+}
+
+type BlackHoleResetReason = 'manual' | 'player-left'
+
 const isBlackHoleMovePayload = (
   payload: unknown,
 ): payload is BlackHoleMovePayload => {
@@ -23,6 +29,19 @@ const isBlackHoleMovePayload = (
   const data = payload as Record<string, unknown>
 
   return typeof data.cellId === 'number'
+}
+
+const isBlackHoleSettingsPayload = (
+  payload: unknown,
+): payload is BlackHoleSettingsPayload => {
+  if (!payload || typeof payload !== 'object') return false
+
+  const data = payload as Record<string, unknown>
+
+  return (
+    data.numberOfPlayers === 2 ||
+    data.numberOfPlayers === 3
+  )
 }
 
 const BlackHole = () => {
@@ -40,20 +59,6 @@ const BlackHole = () => {
   const globalStyles = createGlobalStyles(colors)
 
   const {
-    currentPlayer,
-    cells,
-    handleCellPress,
-    handleRemoteCellPress,
-    winners,
-    gameOver,
-    playAgain,
-    scores,
-  } = useBlackHole({
-    numberOfPlayers,
-    playerControllers,
-  })
-
-  const {
     roomCode,
     setRoomCode,
     username,
@@ -66,7 +71,38 @@ const BlackHole = () => {
     incomingRoomEvent,
     setIncomingRoomEvent,
     localPlayer,
+    roomUsersCount,
   } = useRoomContext()
+
+  const handleAiMoveBroadcast = async (
+    cellId: number,
+  ) => {
+    if (!isConnected) return;
+
+    // Αυτή η κίνηση έγινε από AI στο δικό μου tab.
+    // Τη στέλνουμε στα άλλα tabs για να την εφαρμόσουν ως remote move.
+    await sendRoomEvent({
+      type: 'BLACK_HOLE_MOVE',
+      payload: {
+        cellId,
+      },
+    });
+  };
+
+  const {
+    currentPlayer,
+    cells,
+    handleCellPress,
+    handleRemoteCellPress,
+    winners,
+    gameOver,
+    playAgain,
+    scores,
+  } = useBlackHole({
+    numberOfPlayers,
+    playerControllers,
+    onAiMove: handleAiMoveBroadcast,
+  })
 
   useEffect(() => {
     if (!incomingRoomEvent) return
@@ -89,7 +125,7 @@ const BlackHole = () => {
     if (!isConnected) return
     if (localPlayer === null) return
 
-    // Αν είμαι waiting, δεν ελέγχω κανέναν παίκτη.
+    // 4ο tab και πάνω: μόνο spectating
     if (localPlayer === 'waiting') {
       setPlayerControllers({
         player1: 'remote',
@@ -99,15 +135,85 @@ const BlackHole = () => {
       return
     }
 
-    // Αυτό το tab ελέγχει μόνο τον δικό του player.
-    // Όλοι οι άλλοι είναι remote.
+    // Special case:
+    // 3-player game, αλλά υπάρχουν μόνο 2 ανθρώπινα tabs.
+    // Το Tab 1 αναλαμβάνει να τρέχει τον Player 3 ως AI.
+    if (
+      numberOfPlayers === 3 &&
+      roomUsersCount === 2
+    ) {
+      setPlayerControllers({
+        player1: localPlayer === 1 ? 'local' : 'remote',
+        player2: localPlayer === 2 ? 'local' : 'remote',
+        player3: localPlayer === 1 ? 'ai' : 'remote',
+      })
+      return
+    }
+
+    // Default online mode:
+    // κάθε tab ελέγχει μόνο τον δικό του player
     setPlayerControllers({
       player1: localPlayer === 1 ? 'local' : 'remote',
       player2: localPlayer === 2 ? 'local' : 'remote',
       player3: localPlayer === 3 ? 'local' : 'remote',
     })
-  }, [isConnected, localPlayer])
-  
+  }, [
+    isConnected,
+    localPlayer,
+    numberOfPlayers,
+    roomUsersCount,
+  ])
+
+  useEffect(() => {
+    if (!incomingRoomEvent) return
+    if (incomingRoomEvent.type !== 'BLACK_HOLE_SETTINGS') return
+
+    if (!isBlackHoleSettingsPayload(incomingRoomEvent.payload)) {
+      return
+    }
+
+    // Ήρθε αλλαγή settings από άλλο tab.
+    // Δεν κάνουμε broadcast ξανά, απλώς εφαρμόζουμε.
+    setNumberOfPlayers(incomingRoomEvent.payload.numberOfPlayers)
+
+    setIncomingRoomEvent(null)
+  }, [
+    incomingRoomEvent,
+    setIncomingRoomEvent,
+  ])
+
+  useEffect(() => {
+    if (!incomingRoomEvent) return
+    if (incomingRoomEvent.type !== 'BLACK_HOLE_RESET') return
+
+    // Ήρθε reset από άλλο tab.
+    // Δεν ξαναστέλνουμε event, μόνο εφαρμόζουμε local reset.
+    playAgain()
+
+    setIncomingRoomEvent(null)
+  }, [
+    incomingRoomEvent,
+    playAgain,
+    setIncomingRoomEvent,
+  ])
+
+  useEffect(() => {
+    if (!isConnected) return
+    if (roomUsersCount === 0) return
+
+    // Αν παίζουμε 2P και μείνει λιγότερος από 2, reset.
+    if (numberOfPlayers === 2 && roomUsersCount < 2) {
+      handleResetGame('player-left')
+      return
+    }
+
+    // Αν παίζουμε 3P και μείνουν λιγότεροι από 3, reset.
+    if (numberOfPlayers === 3 && roomUsersCount < 3) {
+      handleResetGame('player-left')
+    }
+  }, [
+    roomUsersCount,
+  ])
 
   const setPlayerController = (
     player: keyof PlayerControllers,
@@ -137,6 +243,54 @@ const BlackHole = () => {
         cellId,
       },
     })
+  }
+
+  const handleNumberOfPlayersChange = async (
+    value: 2 | 3,
+  ) => {
+    setNumberOfPlayers(value)
+
+    if (!isConnected) return
+
+    await sendRoomEvent({
+      type: 'BLACK_HOLE_SETTINGS',
+      payload: {
+        numberOfPlayers: value,
+      },
+    })
+  }
+
+  const handleResetGame = async (
+    reason: BlackHoleResetReason = 'manual',
+  ) => {
+    // Κάνει reset στο δικό μου tab.
+    playAgain()
+
+    if (!isConnected) return
+
+    // Ενημερώνει τα άλλα tabs να κάνουν reset.
+    await sendRoomEvent({
+      type: 'BLACK_HOLE_RESET',
+      payload: {
+        reason,
+      },
+    })
+  }
+
+  const getTurnText = () => {
+    if (localPlayer === 'waiting') {
+      return `Spectating - Now Playing: Player ${currentPlayer}`
+    }
+
+    if (localPlayer === null) {
+      return `Now Playing: Player ${currentPlayer}`
+    }
+
+    if (localPlayer === currentPlayer) {
+      return `Now Playing: Player ${currentPlayer} - It's your turn`
+    }
+
+    return `Now Playing: Player ${currentPlayer} - Waiting`
   }
 
   return (
@@ -172,7 +326,7 @@ const BlackHole = () => {
                   globalStyles.segmentButton,
                   numberOfPlayers === 2 && globalStyles.segmentButtonActive,
                 ]}
-                onPress={() => setNumberOfPlayers(2)}
+                onPress={() => handleNumberOfPlayersChange(2)}
               >
                 <Text
                   style={[
@@ -189,7 +343,7 @@ const BlackHole = () => {
                   globalStyles.segmentButton,
                   numberOfPlayers === 3 && globalStyles.segmentButtonActive,
                 ]}
-                onPress={() => setNumberOfPlayers(3)}
+                onPress={() => handleNumberOfPlayersChange(3)}
               >
                 <Text
                   style={[
@@ -295,8 +449,13 @@ const BlackHole = () => {
             </View>
           )}
 
+          <Button
+            title='Reset Game'
+            onPress={() => handleResetGame('manual')}
+          />
+
           <Text style={styles.playerText}>
-            Now Playing: Player {currentPlayer}
+            {getTurnText()}
           </Text>
 
           {gameOver && (

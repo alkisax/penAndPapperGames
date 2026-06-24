@@ -42,6 +42,7 @@ type RoomContextValue = {
   setIncomingRoomEvent: Dispatch<SetStateAction<RoomEvent | null>>
   sendRoomEvent: (event: RoomEvent) => Promise<void>
   localPlayer: RoomPlayerSlot
+  roomUsersCount: number
 }
 
 const RoomContext =
@@ -66,6 +67,7 @@ export const RoomProvider = ({
   const [roomCode, setRoomCode] = useState('')
   const [isConnected, setIsConnected] = useState(false)
   const [hasPeer, setHasPeer] = useState(false)
+  const [roomUsersCount, setRoomUsersCount] = useState(0)
   const [connection, setConnection] = useState<signalR.HubConnection | null>(null)
   const [username, setUsername] = useState(createGuestUsername)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
@@ -118,6 +120,7 @@ export const RoomProvider = ({
 
     newConnection.on('RoomUsers', (count: number) => {
       console.log('RoomUsers:', count)
+      setRoomUsersCount(count)
       setHasPeer(count >= 2)
 
       // Μόνο την πρώτη φορά που μπαίνει αυτό το tab στο room
@@ -165,6 +168,7 @@ export const RoomProvider = ({
       setHasPeer(false)
       setConnection(null)
       setLocalPlayer(null)
+      setRoomUsersCount(0)
       localPlayerRef.current = null
 
       if (err) {
@@ -347,6 +351,7 @@ export const RoomProvider = ({
     setIsConnected(false)
     setHasPeer(false)
     setLocalPlayer(null)
+    setRoomUsersCount(0)
     localPlayerRef.current = null
   }
 
@@ -378,6 +383,7 @@ export const RoomProvider = ({
         setIncomingRoomEvent,
         sendRoomEvent,
         localPlayer,
+        roomUsersCount,
       }}
     >
       {children}
