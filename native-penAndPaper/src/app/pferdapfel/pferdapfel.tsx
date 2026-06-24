@@ -11,41 +11,52 @@ import Navbar from '@/layout/Navbar'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
 import { usePferdApfel } from '@/hooks/pferdapfel/usePferdApfel'
+import { usePferdApfelMultiplayer } from '@/hooks/pferdapfel/usePferdApfelMultiplayer'
 
 const Pferdapfel = () => {
   const { colors } = useContext(ThemeContext)
   const globalStyles = createGlobalStyles(colors)
 
   const {
-    currentPlayer,
+    roomCode,
+    setRoomCode,
+    username,
+    setUsername,
+    isConnected,
+    hasPeer,
+    connectToChatRoom,
+    disconnectFromChatRoom,
+
     knights,
     blockedCells,
     winner,
     gameOver,
-    handleCellPress,
-    restartGame,
-  } = usePferdApfel()
+    turnText,
+
+    handlePferdApfelCellPress,
+    handleResetGame,
+  } = usePferdApfelMultiplayer()
 
   return (
     <View style={globalStyles.screen}>
       <Navbar
-        roomId=''
-        setRoomId={() => {}}
-        username=''
-        setUsername={() => {}}
-        handleConnectSocket={async () => {}}
-        handleDisconnectSocket={async () => {}}
-        isConnected={false}
-        hasPeer={false}
+        roomId={roomCode}
+        setRoomId={setRoomCode}
+        username={username}
+        setUsername={setUsername}
+        handleConnectSocket={connectToChatRoom}
+        handleDisconnectSocket={disconnectFromChatRoom}
+        isConnected={isConnected}
+        hasPeer={hasPeer}
       />
 
       <View style={globalStyles.centerContent}>
         <Text style={globalStyles.title}>
-          Pferdäppel
+          Pferdäpfel
         </Text>
 
         <Text style={globalStyles.text}>
-          Current player: {currentPlayer}
+          {turnText}
         </Text>
 
         {gameOver && winner && (
@@ -56,7 +67,7 @@ const Pferdapfel = () => {
 
         <Pressable
           style={globalStyles.primaryButton}
-          onPress={restartGame}
+          onPress={() => handleResetGame('manual')}
         >
           <Text style={globalStyles.primaryButtonText}>
             Restart Game
@@ -66,7 +77,7 @@ const Pferdapfel = () => {
         <PferdApfelBoard
           knights={knights}
           blockedCells={blockedCells}
-          handleCellPress={handleCellPress}
+          handleCellPress={handlePferdApfelCellPress}
         />
       </View>
     </View>

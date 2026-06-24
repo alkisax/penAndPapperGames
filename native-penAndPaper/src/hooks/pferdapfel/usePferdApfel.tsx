@@ -62,7 +62,7 @@ export const usePferdApfel = () => {
     col: number,
     id: number,
   ) => {
-    if (gameOver) return
+    if (gameOver) return false
 
     const currentPosition =
       currentPlayer === 'blue'
@@ -86,7 +86,7 @@ export const usePferdApfel = () => {
         to: targetPosition,
       })
 
-      return
+      return false
     }
 
     const legalMove = isLegalKnightMove(
@@ -102,7 +102,7 @@ export const usePferdApfel = () => {
         to: targetPosition,
       })
 
-      return
+      return false
     }
 
     const isCapture = isSamePosition(
@@ -145,7 +145,7 @@ export const usePferdApfel = () => {
 
       setWinner(currentPlayer)
       setGameOver(true)
-      return
+      return true
     }
 
     const nextPlayer = getNextPlayer(currentPlayer)
@@ -163,10 +163,11 @@ export const usePferdApfel = () => {
     if (remainingMoves.length === 0) {
       setWinner(currentPlayer)
       setGameOver(true)
-      return
+      return true
     }
 
     setCurrentPlayer(nextPlayer)
+    return true
   }
 
   const restartGame = () => {
