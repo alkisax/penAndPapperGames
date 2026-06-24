@@ -101,6 +101,8 @@ const Pferdapfel = () => {
           knights={knights}
           blockedCells={blockedCells}
           handleCellPress={handlePferdApfelCellPress}
+          boardBackground={colors.boardBackground}
+          boardLine={colors.boardLine}
         />
       </View>
     </View>

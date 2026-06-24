@@ -29,6 +29,8 @@ export const COLORS = {
     buttonBorder: "#ddd4aa",
     green: "#27ae60",
     red: "#d63031",
+    boardBackground: "#ffffff",
+    boardLine: "#222222",
   },
 
   dark: {
@@ -58,6 +60,8 @@ export const COLORS = {
     buttonBorder: "#444444",
     green: "#2ecc71",
     red: "#ff6b6b",
+    boardBackground: "#d8d8d8",
+    boardLine: "#222222",
   },
 };
 
