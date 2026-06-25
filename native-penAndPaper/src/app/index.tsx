@@ -67,6 +67,15 @@ export default function Index() {
             Slingshot Test
           </Text>
         </Pressable>
+
+        <Pressable
+          style={globalStyles.primaryButton}
+          onPress={() => router.push('/paperAirfight/paperAirfight')}
+        >
+          <Text style={globalStyles.primaryButtonText}>
+            Paper Airfight
+          </Text>
+        </Pressable>
       </View>
     </View>
   )
