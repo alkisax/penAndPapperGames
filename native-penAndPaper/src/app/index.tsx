@@ -55,7 +55,7 @@ export default function Index() {
           onPress={() => router.push('/pferdapfel/pferdapfel')}
         >
           <Text style={globalStyles.primaryButtonText}>
-            Pferdappel
+            Pferdäpfel
           </Text>
         </Pressable>
 

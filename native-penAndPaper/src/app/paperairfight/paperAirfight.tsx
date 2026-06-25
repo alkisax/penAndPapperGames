@@ -1,42 +1,58 @@
 import { useContext } from 'react'
-import { Text, View } from 'react-native'
+import { Button, Text, View } from 'react-native'
 import Navbar from '@/layout/Navbar'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
 import PaperAirfightBoardSvg from '@/components/svg/paperairfight/paperAirfightBoardSvg'
 import SlingshotComponentSvg from '@/components/svg/slingshot/SlingshotComponentSvg'
-import { usePaperAirfight } from '@/hooks/paperAirfight/usePaperAirfight'
+import { usePaperAirfightMultiplayer } from '@/hooks/paperAirfight/usePaperAirfightMultiplayer'
 
 const PaperAirfight = () => {
   // Theme
   const { colors } = useContext(ThemeContext)
   const globalStyles = createGlobalStyles(colors)
 
-  // Game logic
+  // Game + multiplayer logic
   const {
+    roomCode,
+    setRoomCode,
+    username,
+    setUsername,
+    isConnected,
+    hasPeer,
+    connectToChatRoom,
+    disconnectFromChatRoom,
+
     boardWidth,
     boardHeight,
-    currentPlayer,
+    turnText,
     selectedPieceId,
     selectedPiece,
     pieces,
     ghostPieces,
     trailLines,
-    handleSelectPiece,
-    handleShot,
-  } = usePaperAirfight({ colors })
+
+    handlePaperAirfightSelectPiece,
+    handlePaperAirfightShot,
+
+    isOAi,
+    setIsOAi,
+  } = usePaperAirfightMultiplayer({
+    colors,
+  })
 
   return (
     <View style={globalStyles.screen}>
+      {/* Multiplayer navbar */}
       <Navbar
-        roomId=''
-        setRoomId={() => { }}
-        username=''
-        setUsername={() => { }}
-        handleConnectSocket={async () => { }}
-        handleDisconnectSocket={async () => { }}
-        isConnected={false}
-        hasPeer={false}
+        roomId={roomCode}
+        setRoomId={setRoomCode}
+        username={username}
+        setUsername={setUsername}
+        handleConnectSocket={connectToChatRoom}
+        handleDisconnectSocket={disconnectFromChatRoom}
+        isConnected={isConnected}
+        hasPeer={hasPeer}
       />
 
       <View style={globalStyles.centerContent}>
@@ -46,8 +62,15 @@ const PaperAirfight = () => {
         </Text>
 
         <Text style={globalStyles.text}>
-          Turn: {currentPlayer.toUpperCase()}
+          {turnText}
         </Text>
+
+        {!isConnected && (
+          <Button
+            title={isOAi ? 'Disable O AI' : 'Enable O AI'}
+            onPress={() => setIsOAi((prev) => !prev)}
+          />
+        )}
 
         {/* Board */}
         <View
@@ -67,7 +90,7 @@ const PaperAirfight = () => {
             ]}
             trailLines={trailLines}
             selectedPieceId={selectedPieceId}
-            onSelectPiece={handleSelectPiece}
+            onSelectPiece={handlePaperAirfightSelectPiece}
           />
 
           {/* Slingshot */}
@@ -79,7 +102,7 @@ const PaperAirfight = () => {
               height={boardHeight}
               circleColor={selectedPiece.color}
               lineColor={selectedPiece.color}
-              onRelease={handleShot}
+              onRelease={handlePaperAirfightShot}
             />
           )}
         </View>

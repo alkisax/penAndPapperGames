@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppColors } from "@/styles/global";
 import { tweenPosition } from "@/utils/tweenPosition";
 import { lineHitsCircle } from "@/utils/lineCircleCollision";
+import { suggestPaperAirfightMove } from "@/utils/paperAirfightUtils/suggestPaperAirfightMove";
 
 export type PaperAirfightPlayer = "x" | "o";
 
@@ -24,13 +25,14 @@ export type TrailLine = {
   color: string;
 };
 
-type ShotResult = {
+export type ShotResult = {
   power: number;
   angle: number;
 };
 
 type Props = {
   colors: AppColors;
+  isOAi?: boolean;
 };
 
 const BOARD_WIDTH = 380;
@@ -229,15 +231,18 @@ const clamp = (value: number, min: number, max: number) => {
   return Math.max(min, Math.min(value, max));
 };
 
-export const usePaperAirfight = ({ colors }: Props) => {
+export const usePaperAirfight = ({ colors, isOAi = false }: Props) => {
   // State
   const [power, setPower] = useState(0);
   const [angle, setAngle] = useState(0);
   const [currentPlayer, setCurrentPlayer] = useState<PaperAirfightPlayer>("x");
   const [selectedPieceId, setSelectedPieceId] = useState<string | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+
   const [pieces, setPieces] = useState<PaperAirfightPiece[]>(() =>
     createInitialPieces(colors),
   );
+
   const [ghostPieces, setGhostPieces] = useState<PaperAirfightPiece[]>([]);
   const [trailLines, setTrailLines] = useState<TrailLine[]>([]);
 
@@ -251,6 +256,8 @@ export const usePaperAirfight = ({ colors }: Props) => {
 
   // Select
   const handleSelectPiece = (pieceId: string) => {
+    if (isAnimating) return;
+
     const piece = pieces.find((piece) => piece.id === pieceId);
 
     if (!piece) return;
@@ -260,14 +267,21 @@ export const usePaperAirfight = ({ colors }: Props) => {
     setSelectedPieceId(pieceId);
   };
 
-  // Shot
-  const handleShot = (result: ShotResult) => {
-    if (!selectedPiece) return;
+  // Shot by explicit piece id - useful for multiplayer
+  const handleShotForPiece = (pieceId: string, result: ShotResult) => {
+    if (isAnimating) return false;
 
+    const piece = pieces.find(
+      (piece) =>
+        piece.id === pieceId && piece.isAlive && piece.type === currentPlayer,
+    );
+
+    if (!piece) return false;
+
+    setIsAnimating(true);
     setPower(result.power);
     setAngle(result.angle);
-
-    const piece = selectedPiece;
+    setSelectedPieceId(null);
 
     const distance = (result.power / 100) * MAX_MOVE_DISTANCE;
 
@@ -284,6 +298,7 @@ export const usePaperAirfight = ({ colors }: Props) => {
       BOARD_HEIGHT - SPRITE_PADDING,
     );
 
+    // Collision check
     const hitPieceIds = pieces
       .filter((targetPiece) => targetPiece.isAlive)
       .filter((targetPiece) => targetPiece.id !== piece.id)
@@ -298,6 +313,7 @@ export const usePaperAirfight = ({ colors }: Props) => {
       )
       .map((targetPiece) => targetPiece.id);
 
+    // Old position ghost
     setGhostPieces((prev) => [
       ...prev,
       {
@@ -307,6 +323,7 @@ export const usePaperAirfight = ({ colors }: Props) => {
       },
     ]);
 
+    // Move selected piece
     tweenPosition({
       from: {
         x: piece.x,
@@ -317,6 +334,7 @@ export const usePaperAirfight = ({ colors }: Props) => {
         y: clampedY,
       },
       onUpdate: (position) => {
+        // Visual trail trick: start -> current frame
         const previousPosition = {
           x: piece.x,
           y: piece.y,
@@ -359,13 +377,54 @@ export const usePaperAirfight = ({ colors }: Props) => {
           }),
         );
 
-        setSelectedPieceId(null);
+        setIsAnimating(false);
         setCurrentPlayer((prev) => (prev === "x" ? "o" : "x"));
       },
     });
 
-    setSelectedPieceId(null);
+    return true;
   };
+
+  // Shot from selected piece - used by slingshot
+  const handleShot = (result: ShotResult) => {
+    if (!selectedPieceId) return false;
+
+    return handleShotForPiece(selectedPieceId, result);
+  };
+
+  // Reset
+  const restartGame = () => {
+    setPower(0);
+    setAngle(0);
+    setCurrentPlayer("x");
+    setSelectedPieceId(null);
+    setIsAnimating(false);
+    setPieces(createInitialPieces(colors));
+    setGhostPieces([]);
+    setTrailLines([]);
+  };
+
+  useEffect(() => {
+    if (!isOAi) return;
+    if (currentPlayer !== "o") return;
+    if (isAnimating) return;
+
+    const timeoutId = setTimeout(() => {
+      const suggestedMove = suggestPaperAirfightMove({
+        aiPlayer: "o",
+        pieces,
+        boardWidth: BOARD_WIDTH,
+        boardHeight: BOARD_HEIGHT,
+        maxMoveDistance: MAX_MOVE_DISTANCE,
+      });
+
+      if (!suggestedMove) return;
+
+      handleShotForPiece(suggestedMove.pieceId, suggestedMove.shot);
+    }, 600);
+
+    return () => clearTimeout(timeoutId);
+  }, [currentPlayer, handleShotForPiece, isAnimating, isOAi, pieces]);
 
   return {
     boardWidth: BOARD_WIDTH,
@@ -378,7 +437,11 @@ export const usePaperAirfight = ({ colors }: Props) => {
     pieces,
     ghostPieces,
     trailLines,
+    isAnimating,
     handleSelectPiece,
     handleShot,
+    handleShotForPiece,
+    restartGame,
+    isOAi,
   };
 };
