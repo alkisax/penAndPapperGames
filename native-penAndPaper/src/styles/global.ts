@@ -31,6 +31,9 @@ export const COLORS = {
     red: "#d63031",
     boardBackground: "#ffffff",
     boardLine: "#222222",
+
+    ghostPiece: "#999999",
+    deadPiece: "#8a7a22",
   },
 
   dark: {
@@ -62,6 +65,9 @@ export const COLORS = {
     red: "#ff6b6b",
     boardBackground: "#d8d8d8",
     boardLine: "#222222",
+
+    ghostPiece: "#777777",
+    deadPiece: "#6f641f",
   },
 };
 
