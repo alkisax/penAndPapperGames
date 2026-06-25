@@ -22,7 +22,6 @@ const PaperAirfight = () => {
     hasPeer,
     connectToChatRoom,
     disconnectFromChatRoom,
-
     boardWidth,
     boardHeight,
     turnText,
@@ -31,12 +30,13 @@ const PaperAirfight = () => {
     pieces,
     ghostPieces,
     trailLines,
-
     handlePaperAirfightSelectPiece,
     handlePaperAirfightShot,
-
     isOAi,
     setIsOAi,
+    winner,
+    gameOver,
+    handleResetGame,
   } = usePaperAirfightMultiplayer({
     colors,
   })
@@ -64,6 +64,17 @@ const PaperAirfight = () => {
         <Text style={globalStyles.text}>
           {turnText}
         </Text>
+
+        {gameOver && winner && (
+          <Text style={globalStyles.text}>
+            Winner: {winner.toUpperCase()}
+          </Text>
+        )}
+
+        <Button
+          title='Restart Game'
+          onPress={() => handleResetGame('manual')}
+        />
 
         {!isConnected && (
           <Button

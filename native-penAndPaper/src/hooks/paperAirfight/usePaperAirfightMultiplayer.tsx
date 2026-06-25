@@ -92,6 +92,8 @@ export const usePaperAirfightMultiplayer = ({
     handleSelectPiece,
     handleShotForPiece,
     restartGame,
+    winner,
+    gameOver,
   } = usePaperAirfight({
     colors,
     isOAi: !isConnected && isOAi,
@@ -273,11 +275,11 @@ export const usePaperAirfightMultiplayer = ({
     return `Current player: ${currentPlayer.toUpperCase()} - Waiting`
   }
 
-  console.log('AI toggle state', {
-  isOAi,
-  isConnected,
-  effectiveAi: !isConnected && isOAi,
-})
+  // console.log('e', {
+  //   isOAi,
+  //   isConnected,
+  //   effectiveAi: !isConnected && isOAi,
+  // })
 
   return {
     // Room
@@ -312,5 +314,7 @@ export const usePaperAirfightMultiplayer = ({
     handleResetGame,
     isOAi,
     setIsOAi,
+    winner,
+    gameOver,
   }
 }

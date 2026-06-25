@@ -70,7 +70,7 @@ export default function Index() {
 
         <Pressable
           style={globalStyles.primaryButton}
-          onPress={() => router.push('/paperAirfight/paperAirfight')}
+          onPress={() => router.push('/paperairfight/paperAirfight')}
         >
           <Text style={globalStyles.primaryButtonText}>
             Paper Airfight

@@ -238,13 +238,13 @@ export const usePaperAirfight = ({ colors, isOAi = false }: Props) => {
   const [currentPlayer, setCurrentPlayer] = useState<PaperAirfightPlayer>("x");
   const [selectedPieceId, setSelectedPieceId] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
-
   const [pieces, setPieces] = useState<PaperAirfightPiece[]>(() =>
     createInitialPieces(colors),
   );
-
   const [ghostPieces, setGhostPieces] = useState<PaperAirfightPiece[]>([]);
   const [trailLines, setTrailLines] = useState<TrailLine[]>([]);
+  const [winner, setWinner] = useState<PaperAirfightPlayer | null>(null);
+  const [gameOver, setGameOver] = useState(false);
 
   // Derived state
   const selectedPiece = pieces.find(
@@ -269,6 +269,7 @@ export const usePaperAirfight = ({ colors, isOAi = false }: Props) => {
 
   // Shot by explicit piece id - useful for multiplayer
   const handleShotForPiece = (pieceId: string, result: ShotResult) => {
+    if (gameOver) return false;
     if (isAnimating) return false;
 
     const piece = pieces.find(
@@ -284,19 +285,35 @@ export const usePaperAirfight = ({ colors, isOAi = false }: Props) => {
     setSelectedPieceId(null);
 
     const distance = (result.power / 100) * MAX_MOVE_DISTANCE;
-
     const radians = (result.angle * Math.PI) / 180;
-
     const nextX = piece.x + Math.cos(radians) * distance;
     const nextY = piece.y + Math.sin(radians) * distance;
-
     const clampedX = clamp(nextX, SPRITE_PADDING, BOARD_WIDTH - SPRITE_PADDING);
-
     const clampedY = clamp(
       nextY,
       SPRITE_PADDING,
       BOARD_HEIGHT - SPRITE_PADDING,
     );
+
+    const isInsideGoal = (
+      player: PaperAirfightPlayer,
+      x: number,
+      y: number,
+    ) => {
+      const goalWidth = BOARD_WIDTH * 0.2;
+      const goalHeight = 42;
+
+      const goalLeft = BOARD_WIDTH / 2 - goalWidth / 2;
+      const goalRight = BOARD_WIDTH / 2 + goalWidth / 2;
+
+      const isInsideGoalX = x >= goalLeft && x <= goalRight;
+
+      if (player === "x") {
+        return isInsideGoalX && y <= goalHeight;
+      }
+
+      return isInsideGoalX && y >= BOARD_HEIGHT - goalHeight;
+    };
 
     // Collision check
     const hitPieceIds = pieces
@@ -365,20 +382,38 @@ export const usePaperAirfight = ({ colors, isOAi = false }: Props) => {
         ]);
       },
       onComplete: () => {
-        setPieces((prev) =>
-          prev.map((currentPiece) => {
-            if (!hitPieceIds.includes(currentPiece.id)) return currentPiece;
+        const scoredGoal = isInsideGoal(piece.type, clampedX, clampedY);
+
+        setPieces((prev) => {
+          const nextPieces = prev.map((currentPiece) => {
+            if (!hitPieceIds.includes(currentPiece.id)) {
+              return currentPiece;
+            }
 
             return {
               ...currentPiece,
               isAlive: false,
               color: colors.deadPiece,
             };
-          }),
-        );
+          });
 
-        setIsAnimating(false);
-        setCurrentPlayer((prev) => (prev === "x" ? "o" : "x"));
+          const opponentAlivePieces = nextPieces.filter(
+            (currentPiece) =>
+              currentPiece.type !== piece.type && currentPiece.isAlive,
+          );
+
+          if (scoredGoal || opponentAlivePieces.length === 0) {
+            setWinner(piece.type);
+            setGameOver(true);
+            setIsAnimating(false);
+            return nextPieces;
+          }
+
+          setIsAnimating(false);
+          setCurrentPlayer((prevPlayer) => (prevPlayer === "x" ? "o" : "x"));
+
+          return nextPieces;
+        });
       },
     });
 
@@ -399,6 +434,8 @@ export const usePaperAirfight = ({ colors, isOAi = false }: Props) => {
     setCurrentPlayer("x");
     setSelectedPieceId(null);
     setIsAnimating(false);
+    setWinner(null);
+    setGameOver(false);
     setPieces(createInitialPieces(colors));
     setGhostPieces([]);
     setTrailLines([]);
@@ -443,5 +480,7 @@ export const usePaperAirfight = ({ colors, isOAi = false }: Props) => {
     handleShotForPiece,
     restartGame,
     isOAi,
+    winner,
+    gameOver,
   };
 };
