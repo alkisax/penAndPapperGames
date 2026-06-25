@@ -8,6 +8,7 @@ type Props = {
   y: number
   color: string
   size?: number
+  opacity?: number
   onPress?: () => void
 }
 
@@ -16,10 +17,11 @@ const XSprite = ({
   y,
   color,
   size = 18,
+  opacity,
   onPress,
 }: Props) => {
   return (
-    <G onPress={onPress}>
+    <G onPress={onPress} opacity={opacity}>
       <Line
         x1={x - size / 2}
         y1={y - size / 2}

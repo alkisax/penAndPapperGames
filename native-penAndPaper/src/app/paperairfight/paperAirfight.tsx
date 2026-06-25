@@ -5,6 +5,7 @@ import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
 import { useContext, useState } from 'react'
 import { tweenPosition } from '@/utils/tweenPosition'
+import { lineHitsCircle } from '@/utils/lineCircleCollision'
 import PaperAirfightBoardSvg from '@/components/svg/paperairfight/paperAirfightBoardSvg'
 import SlingshotComponentSvg from '@/components/svg/slingshot/SlingshotComponentSvg'
 
@@ -16,6 +17,7 @@ const PaperAirfight = () => {
   const [power, setPower] = useState(0)
   const [angle, setAngle] = useState(0)
   const [selectedPieceId, setSelectedPieceId] = useState<string | null>(null)
+  const [currentPlayer, setCurrentPlayer] = useState<'x' | 'o'>('x')
   const [ghostPieces, setGhostPieces] = useState<typeof pieces>([])
   const [pieces, setPieces] = useState([
     { id: 'x-1', type: 'x' as const, x: 90, y: 555, color: '#2f80ed', isAlive: true, size: 12 },
@@ -29,7 +31,7 @@ const PaperAirfight = () => {
     { id: 'x-8', type: 'x' as const, x: 215, y: 575, color: '#2f80ed', isAlive: true, size: 12 },
     { id: 'x-9', type: 'x' as const, x: 265, y: 585, color: '#2f80ed', isAlive: true, size: 12 },
     { id: 'x-10', type: 'x' as const, x: 190, y: 600, color: '#2f80ed', isAlive: true, size: 12 },
-    
+
     { id: 'o-1', type: 'o' as const, x: 90, y: 65, color: '#d63031', isAlive: true, size: 12 },
     { id: 'o-2', type: 'o' as const, x: 140, y: 85, color: '#d63031', isAlive: true, size: 12 },
     { id: 'o-3', type: 'o' as const, x: 190, y: 100, color: '#d63031', isAlive: true, size: 12 },
@@ -65,8 +67,19 @@ const PaperAirfight = () => {
 
   const selectedPiece = pieces.find((piece) =>
     piece.id === selectedPieceId &&
-    piece.isAlive
+    piece.isAlive &&
+    piece.type === currentPlayer
   )
+
+  const handleSelectPiece = (pieceId: string) => {
+    const piece = pieces.find((piece) => piece.id === pieceId)
+
+    if (!piece) return
+    if (!piece.isAlive) return
+    if (piece.type !== currentPlayer) return
+
+    setSelectedPieceId(pieceId)
+  }
 
   const handleShot = (result: {
     power: number
@@ -100,6 +113,20 @@ const PaperAirfight = () => {
 
     const clampedX = clamp(nextX, SPRITE_PADDING, BOARD_WIDTH - SPRITE_PADDING,)
     const clampedY = clamp(nextY, SPRITE_PADDING, BOARD_HEIGHT - SPRITE_PADDING,)
+
+    const hitPieceIds = pieces
+      .filter((targetPiece) => targetPiece.isAlive)
+      .filter((targetPiece) => targetPiece.id !== piece.id)
+      .filter((targetPiece) => targetPiece.type !== piece.type)
+      .filter((targetPiece) =>
+        lineHitsCircle(
+          { x: piece.x, y: piece.y },
+          { x: clampedX, y: clampedY },
+          { x: targetPiece.x, y: targetPiece.y },
+          targetPiece.size ?? 12,
+        ),
+      )
+      .map((targetPiece) => targetPiece.id)
 
     tweenPosition({
       from: {
@@ -140,6 +167,23 @@ const PaperAirfight = () => {
           },
         ])
       },
+
+      onComplete: () => {
+        setPieces((prev) =>
+          prev.map((piece) => {
+            if (!hitPieceIds.includes(piece.id)) return piece
+
+            return {
+              ...piece,
+              isAlive: false,
+              color: '#b59b00',
+            }
+          }),
+        )
+
+        setSelectedPieceId(null)
+        setCurrentPlayer((prev) => prev === 'x' ? 'o' : 'x')
+      },
     })
     setSelectedPieceId(null)
   }
@@ -163,7 +207,7 @@ const PaperAirfight = () => {
         </Text>
 
         <Text style={globalStyles.text}>
-          Hello Paper Airfight
+          Turn: {currentPlayer.toUpperCase()}
         </Text>
 
         <View
@@ -183,7 +227,7 @@ const PaperAirfight = () => {
             ]}
             trailLines={trailLines}
             selectedPieceId={selectedPieceId}
-            onSelectPiece={setSelectedPieceId}
+            onSelectPiece={handleSelectPiece}
           />
 
           {selectedPiece && (

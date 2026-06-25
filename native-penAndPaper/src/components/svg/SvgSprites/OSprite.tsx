@@ -9,6 +9,7 @@ type Props = {
   y: number
   color: string
   size?: number
+  opacity?: number
   onPress?: () => void
 }
 
@@ -17,10 +18,11 @@ const OSprite = ({
   y,
   color,
   size = 18,
+  opacity,
   onPress
 }: Props) => {
   return (
-    <G onPress={onPress}>
+    <G onPress={onPress} opacity={opacity}>
       <Circle
         cx={x}
         cy={y}

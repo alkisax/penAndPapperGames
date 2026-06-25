@@ -154,8 +154,8 @@ const PaperAirfightBoardSvg = ({
 
       {trailLines.map((line, index) => {
         const opacity = Math.max(
-          0.35,
-          1 - index * 0.08,
+          0.12,
+          0.35 - index * 0.03,
         )
 
         return (
@@ -166,7 +166,7 @@ const PaperAirfightBoardSvg = ({
             x2={line.x2}
             y2={line.y2}
             stroke={line.color}
-            strokeWidth={3}
+            strokeWidth={2}
             strokeLinecap='round'
             opacity={opacity}
           />
@@ -174,16 +174,19 @@ const PaperAirfightBoardSvg = ({
       })}
 
       {pieces
-        .filter((piece) => piece.isAlive)
         .map((piece) => {
+          const pieceColor = piece.isAlive ? piece.color : '#8a7a22'
+          const pieceOpacity = piece.isAlive ? 1 : 0.28
+
           if (piece.type === 'x') {
             return (
               <XSprite
                 key={piece.id}
                 x={piece.x}
                 y={piece.y}
-                color={piece.color}
+                color={pieceColor}
                 size={piece.id === selectedPieceId ? 16 : piece.size}
+                opacity={pieceOpacity}
                 onPress={() => onSelectPiece(piece.id)}
               />
             )
@@ -194,8 +197,9 @@ const PaperAirfightBoardSvg = ({
               key={piece.id}
               x={piece.x}
               y={piece.y}
-              color={piece.color}
+              color={pieceColor}
               size={piece.size}
+              opacity={pieceOpacity}
               onPress={() => onSelectPiece(piece.id)}
             />
           )
