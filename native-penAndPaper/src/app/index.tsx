@@ -58,6 +58,15 @@ export default function Index() {
             Pferdappel
           </Text>
         </Pressable>
+
+        <Pressable
+          style={globalStyles.primaryButton}
+          onPress={() => router.push('/slingshot/slingshot')}
+        >
+          <Text style={globalStyles.primaryButtonText}>
+            Slingshot Test
+          </Text>
+        </Pressable>
       </View>
     </View>
   )
