@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { Button, Text, View } from 'react-native'
+import { Button, ScrollView, Text, View } from 'react-native'
 import Navbar from '@/layout/Navbar'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
@@ -55,7 +55,14 @@ const PaperAirfight = () => {
         hasPeer={hasPeer}
       />
 
-      <View style={globalStyles.centerContent}>
+      <ScrollView
+        contentContainerStyle={{
+          alignItems: 'center',
+          paddingTop: 16,
+          paddingBottom: 180,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
         <Text style={globalStyles.title}>
           Paper Airfight
@@ -88,6 +95,7 @@ const PaperAirfight = () => {
           style={{
             width: boardWidth,
             height: boardHeight,
+            overflow: 'visible',
           }}
         >
           <PaperAirfightBoardSvg
@@ -117,8 +125,8 @@ const PaperAirfight = () => {
             />
           )}
         </View>
-      </View>
-    </View>
+      </ScrollView>
+    </View >
   )
 }
 

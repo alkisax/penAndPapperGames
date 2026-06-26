@@ -26,6 +26,11 @@ type Props = {
 const MAX_PULL_DISTANCE = 100
 const GHOST_RADIUS = 18
 
+// Κάνουμε το slingshot overlay μεγαλύτερο από το board,
+// ώστε όταν ένα πιόνι είναι κοντά στην άκρη,
+// ο κύκλος του gesture να μη κόβεται από τα όρια του SVG.
+const OVERLAY_PADDING = MAX_PULL_DISTANCE
+
 const SlingshotComponentSvg = ({
   originX,
   originY,
@@ -35,16 +40,25 @@ const SlingshotComponentSvg = ({
   lineColor,
   onRelease,
 }: Props) => {
-  const [dragX, setDragX] = useState(originX)
-  const [dragY, setDragY] = useState(originY)
+  const overlayWidth = width + OVERLAY_PADDING * 2
+  const overlayHeight = height + OVERLAY_PADDING * 2
+
+  // Το origin έρχεται σε board coordinates.
+  // Επειδή όμως το overlay ξεκινάει πιο πάνω/αριστερά,
+  // μεταφέρουμε το origin μέσα στο μεγαλύτερο overlay.
+  const localOriginX = originX + OVERLAY_PADDING
+  const localOriginY = originY + OVERLAY_PADDING
+
+  const [dragX, setDragX] = useState(localOriginX)
+  const [dragY, setDragY] = useState(localOriginY)
   const [isDragging, setIsDragging] = useState(false)
 
   const clampToMaxDistance = (
     x: number,
     y: number,
   ) => {
-    const dx = x - originX
-    const dy = y - originY
+    const dx = x - localOriginX
+    const dy = y - localOriginY
 
     const distance = Math.sqrt(dx * dx + dy * dy)
 
@@ -58,8 +72,8 @@ const SlingshotComponentSvg = ({
     const ratio = MAX_PULL_DISTANCE / distance
 
     return {
-      x: originX + dx * ratio,
-      y: originY + dy * ratio,
+      x: localOriginX + dx * ratio,
+      y: localOriginY + dy * ratio,
     }
   }
 
@@ -67,8 +81,8 @@ const SlingshotComponentSvg = ({
     x: number,
     y: number,
   ): SlingshotResult => {
-    const pullDx = x - originX
-    const pullDy = y - originY
+    const pullDx = x - localOriginX
+    const pullDy = y - localOriginY
 
     const distance = Math.sqrt(
       pullDx * pullDx + pullDy * pullDy,
@@ -80,8 +94,8 @@ const SlingshotComponentSvg = ({
     )
 
     // Το shot πάει αντίθετα από το pull.
-    const shotDx = originX - x
-    const shotDy = originY - y
+    const shotDx = localOriginX - x
+    const shotDy = localOriginY - y
 
     const radians = Math.atan2(
       shotDy,
@@ -106,12 +120,10 @@ const SlingshotComponentSvg = ({
   ) => {
     const result = calculateResult(x, y)
 
-    setDragX(originX)
-    setDragY(originY)
+    setDragX(localOriginX)
+    setDragY(localOriginY)
     setIsDragging(false)
 
-    // Αν απλώς πάτησε χωρίς να τραβήξει,
-    // δεν κάνουμε shot.
     if (result.power <= 0) {
       return
     }
@@ -125,13 +137,13 @@ const SlingshotComponentSvg = ({
 
     onPanResponderGrant: () => {
       setIsDragging(true)
-      setDragX(originX)
-      setDragY(originY)
+      setDragX(localOriginX)
+      setDragY(localOriginY)
     },
 
     onPanResponderMove: (_, gestureState) => {
-      const nextX = originX + gestureState.dx
-      const nextY = originY + gestureState.dy
+      const nextX = localOriginX + gestureState.dx
+      const nextY = localOriginY + gestureState.dy
 
       const clampedPosition = clampToMaxDistance(
         nextX,
@@ -143,8 +155,8 @@ const SlingshotComponentSvg = ({
     },
 
     onPanResponderRelease: (_, gestureState) => {
-      const nextX = originX + gestureState.dx
-      const nextY = originY + gestureState.dy
+      const nextX = localOriginX + gestureState.dx
+      const nextY = localOriginY + gestureState.dy
 
       const clampedPosition = clampToMaxDistance(
         nextX,
@@ -158,8 +170,8 @@ const SlingshotComponentSvg = ({
     },
 
     onPanResponderTerminate: () => {
-      setDragX(originX)
-      setDragY(originY)
+      setDragX(localOriginX)
+      setDragY(localOriginY)
       setIsDragging(false)
     },
   })
@@ -169,21 +181,20 @@ const SlingshotComponentSvg = ({
       {...panResponder.panHandlers}
       style={{
         position: 'absolute',
-        top: 0,
-        left: 0,
-        width,
-        height,
+        top: -OVERLAY_PADDING,
+        left: -OVERLAY_PADDING,
+        width: overlayWidth,
+        height: overlayHeight,
       }}
-      pointerEvents='auto'
     >
       <Svg
-        width={width}
-        height={height}
+        width={overlayWidth}
+        height={overlayHeight}
       >
         {isDragging && (
           <Circle
-            cx={originX}
-            cy={originY}
+            cx={localOriginX}
+            cy={localOriginY}
             r={MAX_PULL_DISTANCE}
             fill='transparent'
             stroke={circleColor}
@@ -195,8 +206,8 @@ const SlingshotComponentSvg = ({
 
         {isDragging && (
           <Line
-            x1={originX}
-            y1={originY}
+            x1={localOriginX}
+            y1={localOriginY}
             x2={dragX}
             y2={dragY}
             stroke={lineColor}
