@@ -1,8 +1,8 @@
-// native-penAndPaper/src/components/svg/slingshot/SlinshotComponentSvg.tsx
-
 import { useState } from 'react'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import { scheduleOnRN } from 'react-native-worklets'
+import {
+  PanResponder,
+  View,
+} from 'react-native'
 import Svg, {
   Circle,
   Line,
@@ -49,7 +49,10 @@ const SlingshotComponentSvg = ({
     const distance = Math.sqrt(dx * dx + dy * dy)
 
     if (distance <= MAX_PULL_DISTANCE) {
-      return { x, y }
+      return {
+        x,
+        y,
+      }
     }
 
     const ratio = MAX_PULL_DISTANCE / distance
@@ -76,10 +79,14 @@ const SlingshotComponentSvg = ({
       100,
     )
 
+    // Το shot πάει αντίθετα από το pull.
     const shotDx = originX - x
     const shotDy = originY - y
 
-    const radians = Math.atan2(shotDy, shotDx)
+    const radians = Math.atan2(
+      shotDy,
+      shotDx,
+    )
 
     let angle = radians * 180 / Math.PI
 
@@ -99,55 +106,79 @@ const SlingshotComponentSvg = ({
   ) => {
     const result = calculateResult(x, y)
 
-    onRelease(result)
-
     setDragX(originX)
     setDragY(originY)
     setIsDragging(false)
+
+    // Αν απλώς πάτησε χωρίς να τραβήξει,
+    // δεν κάνουμε shot.
+    if (result.power <= 0) {
+      return
+    }
+
+    onRelease(result)
   }
 
-  const panGesture = Gesture.Pan()
-    .onBegin(() => {
-      scheduleOnRN(setIsDragging, true)
-    })
-    .onUpdate((event) => {
-      const nextX = originX + event.translationX
-      const nextY = originY + event.translationY
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+
+    onPanResponderGrant: () => {
+      setIsDragging(true)
+      setDragX(originX)
+      setDragY(originY)
+    },
+
+    onPanResponderMove: (_, gestureState) => {
+      const nextX = originX + gestureState.dx
+      const nextY = originY + gestureState.dy
 
       const clampedPosition = clampToMaxDistance(
         nextX,
         nextY,
       )
 
-      scheduleOnRN(setDragX, clampedPosition.x)
-      scheduleOnRN(setDragY, clampedPosition.y)
-    })
-    .onEnd((event) => {
-      const nextX = originX + event.translationX
-      const nextY = originY + event.translationY
+      setDragX(clampedPosition.x)
+      setDragY(clampedPosition.y)
+    },
+
+    onPanResponderRelease: (_, gestureState) => {
+      const nextX = originX + gestureState.dx
+      const nextY = originY + gestureState.dy
 
       const clampedPosition = clampToMaxDistance(
         nextX,
         nextY,
       )
 
-      scheduleOnRN(
-        finishDrag,
+      finishDrag(
         clampedPosition.x,
         clampedPosition.y,
       )
-    })
+    },
+
+    onPanResponderTerminate: () => {
+      setDragX(originX)
+      setDragY(originY)
+      setIsDragging(false)
+    },
+  })
 
   return (
-    <GestureDetector gesture={panGesture}>
+    <View
+      {...panResponder.panHandlers}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width,
+        height,
+      }}
+      pointerEvents='auto'
+    >
       <Svg
         width={width}
         height={height}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-        }}
       >
         {isDragging && (
           <Circle
@@ -185,7 +216,7 @@ const SlingshotComponentSvg = ({
           />
         )}
       </Svg>
-    </GestureDetector>
+    </View>
   )
 }
 

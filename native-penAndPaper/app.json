@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "native-penAndPapper",
-    "slug": "native-penAndPapper",
+    "name": "Pen and Paper Games",
+    "slug": "pen-and-paper-games",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -17,7 +17,9 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.alkisax.penandpapergames",
+      "versionCode": 1
     },
     "web": {
       "output": "static",

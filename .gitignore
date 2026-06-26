@@ -183,3 +183,4 @@ Thumbs.db
 *.p12
 *.pem
 local.properties
+release-key.keystore

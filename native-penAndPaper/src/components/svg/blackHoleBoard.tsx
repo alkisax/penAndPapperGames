@@ -74,7 +74,7 @@ const BlackHoleBoard = ({
 
         return (
 
-          <>
+          // <>
             <G key={cell.id}>
               <Circle
                 cx={x}
@@ -94,7 +94,7 @@ const BlackHoleBoard = ({
                 {cell.value}
               </Text>
             </G>
-          </>
+          // </>
         )
       })}
     </Svg>
