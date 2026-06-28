@@ -76,6 +76,15 @@ export default function Index() {
             Paper Airfight
           </Text>
         </Pressable>
+
+        <Pressable
+          style={globalStyles.primaryButton}
+          onPress={() => router.push('/dandelions/dandelions')}
+        >
+          <Text style={globalStyles.primaryButtonText}>
+            Dandelions
+          </Text>
+        </Pressable>
       </View>
     </View>
   )
