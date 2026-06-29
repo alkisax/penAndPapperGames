@@ -1,8 +1,9 @@
 import { useContext } from 'react'
-import { Button, ScrollView, Text, View } from 'react-native'
+import { Button, Pressable, ScrollView, Switch, Text, View } from 'react-native'
 import Navbar from '@/layout/Navbar'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
+import { router } from 'expo-router'
 import PaperAirfightBoardSvg from '@/components/svg/paperairfight/paperAirfightBoardSvg'
 import SlingshotComponentSvg from '@/components/svg/slingshot/SlingshotComponentSvg'
 import { usePaperAirfightMultiplayer } from '@/hooks/paperAirfight/usePaperAirfightMultiplayer'
@@ -43,7 +44,6 @@ const PaperAirfight = () => {
 
   return (
     <View style={globalStyles.screen}>
-      {/* Multiplayer navbar */}
       <Navbar
         roomId={roomCode}
         setRoomId={setRoomCode}
@@ -63,32 +63,143 @@ const PaperAirfight = () => {
         }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <Text style={globalStyles.title}>
-          Paper Airfight
-        </Text>
+        {/* Header ribbon */}
+        <View
+          style={{
+            width: '96%',
+            paddingVertical: 6,
+            paddingHorizontal: 10,
+            borderRadius: 12,
+            backgroundColor: colors.boardBackground,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 8,
+            marginBottom: 10,
+          }}
+        >
+          <View
+            style={{
+              flex: 1,
+            }}
+          >
+            <Text
+              style={[
+                globalStyles.text,
+                {
+                  fontSize: 13,
+                  fontWeight: '700',
+                },
+              ]}
+              numberOfLines={1}
+            >
+              Paper Airfight
+            </Text>
 
-        <Text style={globalStyles.text}>
-          {turnText}
-        </Text>
+            <Text
+              style={[
+                globalStyles.text,
+                {
+                  fontSize: 11,
+                  opacity: 0.75,
+                },
+              ]}
+              numberOfLines={1}
+            >
+              {gameOver && winner
+                ? `Winner: ${winner.toUpperCase()}`
+                : turnText}
+            </Text>
+          </View>
 
-        {gameOver && winner && (
-          <Text style={globalStyles.text}>
-            Winner: {winner.toUpperCase()}
-          </Text>
-        )}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 6,
+            }}
+          >
+            {!isConnected && (
+              <View
+                style={{
+                  alignItems: 'center',
+                }}
+              >
+                <Text
+                  style={[
+                    globalStyles.text,
+                    {
+                      fontSize: 10,
+                    },
+                  ]}
+                >
+                  O AI
+                </Text>
 
-        <Button
-          title='Restart Game'
-          onPress={() => handleResetGame('manual')}
-        />
+                <Switch
+                  value={isOAi}
+                  onValueChange={setIsOAi}
+                  style={{
+                    transform: [
+                      { scaleX: 0.75 },
+                      { scaleY: 0.75 },
+                    ],
+                  }}
+                />
+              </View>
+            )}
 
-        {!isConnected && (
-          <Button
-            title={isOAi ? 'Disable O AI' : 'Enable O AI'}
-            onPress={() => setIsOAi((prev) => !prev)}
-          />
-        )}
+            <Pressable
+              onPress={() =>
+                router.push('/paperairfight/paperAirfightInfo')
+              }
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 16,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: colors.background,
+              }}
+            >
+              <Text
+                style={[
+                  globalStyles.text,
+                  {
+                    fontSize: 16,
+                    fontWeight: '700',
+                  },
+                ]}
+              >
+                ?
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => handleResetGame('manual')}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 16,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: colors.background,
+              }}
+            >
+              <Text
+                style={[
+                  globalStyles.text,
+                  {
+                    fontSize: 18,
+                    fontWeight: '700',
+                  },
+                ]}
+              >
+                ↻
+              </Text>
+            </Pressable>
+          </View>
+        </View>
 
         {/* Board */}
         <View
@@ -112,7 +223,6 @@ const PaperAirfight = () => {
             onSelectPiece={handlePaperAirfightSelectPiece}
           />
 
-          {/* Slingshot */}
           {selectedPiece && (
             <SlingshotComponentSvg
               originX={selectedPiece.x}
@@ -126,7 +236,7 @@ const PaperAirfight = () => {
           )}
         </View>
       </ScrollView>
-    </View >
+    </View>
   )
 }
 
