@@ -1,8 +1,15 @@
-import { useState } from 'react'
+// native-penAndPaper/src/components/svg/slingshot/SlingshotComponentSvg.tsx
+
+import {
+  useEffect,
+  useState,
+} from 'react'
+
 import {
   PanResponder,
   View,
 } from 'react-native'
+
 import Svg, {
   Circle,
   Line,
@@ -26,10 +33,24 @@ type Props = {
 const MAX_PULL_DISTANCE = 100
 const GHOST_RADIUS = 18
 
-// Κάνουμε το slingshot overlay μεγαλύτερο από το board,
-// ώστε όταν ένα πιόνι είναι κοντά στην άκρη,
-// ο κύκλος του gesture να μη κόβεται από τα όρια του SVG.
+// Μεγαλύτερο overlay για να μην κόβεται από το board.
 const OVERLAY_PADDING = MAX_PULL_DISTANCE
+
+// Μικρό safe offset προς τα μέσα όταν το πιόνι είναι κοντά σε άκρη.
+// Δεν μετακινεί το πιόνι. Μετακινεί μόνο το slingshot UI.
+const EDGE_OFFSET_X = 56
+const EDGE_OFFSET_Y = 70
+
+const clamp = (
+  value: number,
+  min: number,
+  max: number,
+) => {
+  return Math.max(
+    min,
+    Math.min(value, max),
+  )
+}
 
 const SlingshotComponentSvg = ({
   originX,
@@ -43,15 +64,33 @@ const SlingshotComponentSvg = ({
   const overlayWidth = width + OVERLAY_PADDING * 2
   const overlayHeight = height + OVERLAY_PADDING * 2
 
-  // Το origin έρχεται σε board coordinates.
-  // Επειδή όμως το overlay ξεκινάει πιο πάνω/αριστερά,
-  // μεταφέρουμε το origin μέσα στο μεγαλύτερο overlay.
-  const localOriginX = originX + OVERLAY_PADDING
-  const localOriginY = originY + OVERLAY_PADDING
+  const controlOriginX = clamp(
+    originX,
+    EDGE_OFFSET_X,
+    width - EDGE_OFFSET_X,
+  )
+
+  const controlOriginY = clamp(
+    originY,
+    EDGE_OFFSET_Y,
+    height - EDGE_OFFSET_Y,
+  )
+
+  const localOriginX = controlOriginX + OVERLAY_PADDING
+  const localOriginY = controlOriginY + OVERLAY_PADDING
 
   const [dragX, setDragX] = useState(localOriginX)
   const [dragY, setDragY] = useState(localOriginY)
   const [isDragging, setIsDragging] = useState(false)
+
+  useEffect(() => {
+    setDragX(localOriginX)
+    setDragY(localOriginY)
+    setIsDragging(false)
+  }, [
+    localOriginX,
+    localOriginY,
+  ])
 
   const clampToMaxDistance = (
     x: number,

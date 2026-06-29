@@ -1,10 +1,6 @@
 // native-penAndPaper/src/components/svg/paperairfight/paperAirfightBoardSvg.tsx
 
-import Svg, {
-  Line,
-  Path,
-  Rect,
-} from 'react-native-svg'
+import Svg, { G, Line, Path, Rect, } from 'react-native-svg'
 import XSprite from '@/components/svg/SvgSprites/XSprite'
 import OSprite from '@/components/svg/SvgSprites/OSprite'
 
@@ -173,37 +169,54 @@ const PaperAirfightBoardSvg = ({
         )
       })}
 
-      {pieces
-        .map((piece) => {
-          const pieceColor = piece.isAlive ? piece.color : '#8a7a22'
-          const pieceOpacity = piece.isAlive ? 1 : 0.28
+      {pieces.map((piece) => {
+        const pieceColor = piece.isAlive ? piece.color : '#8a7a22'
+        const pieceOpacity = piece.isAlive ? 1 : 0.28
+        const visualSize = piece.id === selectedPieceId
+          ? 16
+          : piece.size
 
-          if (piece.type === 'x') {
-            return (
+        return (
+          <G key={piece.id}>
+            {piece.type === 'x' ? (
               <XSprite
-                key={piece.id}
                 x={piece.x}
                 y={piece.y}
                 color={pieceColor}
-                size={piece.id === selectedPieceId ? 16 : piece.size}
+                size={visualSize}
                 opacity={pieceOpacity}
-                onPress={() => onSelectPiece(piece.id)}
               />
-            )
-          }
+            ) : (
+              <OSprite
+                x={piece.x}
+                y={piece.y}
+                color={pieceColor}
+                size={visualSize}
+                opacity={pieceOpacity}
+              />
+            )}
+          </G>
+        )
+      })}
 
-          return (
-            <OSprite
-              key={piece.id}
-              x={piece.x}
-              y={piece.y}
-              color={pieceColor}
-              size={piece.size}
-              opacity={pieceOpacity}
-              onPress={() => onSelectPiece(piece.id)}
-            />
-          )
-        })}
+      {/* Touch layer only for real live pieces, not ghosts */}
+      {pieces
+        .filter((piece) =>
+          piece.isAlive &&
+          !piece.id.startsWith('ghost-')
+        )
+        .map((piece) => (
+          <Rect
+            key={`touch-${piece.id}`}
+            x={piece.x - 34}
+            y={piece.y - 34}
+            width={68}
+            height={68}
+            fill={boardBackground}
+            opacity={0.01}
+            onPress={() => onSelectPiece(piece.id)}
+          />
+        ))}
     </Svg>
   )
 }
