@@ -1,102 +1,14 @@
-// native-penAndPaper/src/hooks/dandelions/useDandelions.ts
-
+import { Direction, PlayerTurn } from "@/types/dandelion.types";
+import { blowDandelionSeeds } from "@/utils/dandelionUtils/blowDandelionSeeds";
+import { checkDandelionsWinner } from "@/utils/dandelionUtils/checkDandelionsWinner";
+import { createDandelionBoard } from "@/utils/dandelionUtils/createDandelionBoard";
 import { useState } from "react";
-
-type PlayerTurn = "dandelion" | "wind";
-
-type DandelionCell = {
-  id: number;
-  row: number;
-  col: number;
-  hasDandelion: boolean;
-  hasSeed: boolean;
-};
-
-type Direction = "N" | "NE" | "E" | "SE" | "S" | "SW" | "W" | "NW";
-
-const blowSeeds = (
-  cells: DandelionCell[],
-  direction: Direction,
-): DandelionCell[] => {
-  const delta = DIRECTION_DELTAS[direction];
-
-  const dandelions = cells.filter((cell) => cell.hasDandelion);
-
-  const seedCellIds = new Set<number>();
-
-  dandelions.forEach((dandelion) => {
-    let nextRow = dandelion.row + delta.row;
-    let nextCol = dandelion.col + delta.col;
-
-    while (
-      nextRow >= 0 &&
-      nextRow < BOARD_SIZE &&
-      nextCol >= 0 &&
-      nextCol < BOARD_SIZE
-    ) {
-      const targetCell = cells.find(
-        (cell) => cell.row === nextRow && cell.col === nextCol,
-      );
-
-      if (targetCell && !targetCell.hasDandelion) {
-        seedCellIds.add(targetCell.id);
-      }
-
-      nextRow += delta.row;
-      nextCol += delta.col;
-    }
-  });
-
-  return cells.map((cell) => {
-    if (!seedCellIds.has(cell.id)) {
-      return cell;
-    }
-
-    return {
-      ...cell,
-      hasSeed: true,
-    };
-  });
-};
-
-const DIRECTION_DELTAS: Record<Direction, { row: number; col: number }> = {
-  N: { row: -1, col: 0 },
-  NE: { row: -1, col: 1 },
-  E: { row: 0, col: 1 },
-  SE: { row: 1, col: 1 },
-  S: { row: 1, col: 0 },
-  SW: { row: 1, col: -1 },
-  W: { row: 0, col: -1 },
-  NW: { row: -1, col: -1 },
-};
-
-const BOARD_SIZE = 6;
-
-const createInitialCells = (): DandelionCell[] => {
-  return Array.from({ length: BOARD_SIZE * BOARD_SIZE }, (_, index) => {
-    const row = Math.floor(index / BOARD_SIZE);
-    const col = index % BOARD_SIZE;
-
-    return {
-      id: index + 1,
-      row,
-      col,
-      hasDandelion: false,
-      hasSeed: false,
-    };
-  });
-};
 
 const useDandelions = () => {
   const [playerTurn, setPlayerTurn] = useState<PlayerTurn>("dandelion");
-  const [cells, setCells] = useState<DandelionCell[]>(createInitialCells);
+  const [cells, setCells] = useState(createDandelionBoard);
   const [usedDirections, setUsedDirections] = useState<Direction[]>([]);
-
-  const handleResetGame = () => {
-    setCells(createInitialCells());
-    setPlayerTurn("dandelion");
-    setUsedDirections([]);
-  };
+  const [winner, setWinner] = useState<"dandelion" | "wind" | null>(null);
 
   const currentPlayerText = `You are playing - ${playerTurn}`;
 
@@ -105,27 +17,10 @@ const useDandelions = () => {
       ? "Wind is waiting for move"
       : "Dandelion is waiting for move";
 
-  const switchTurn = () => {
-    setPlayerTurn((currentTurn) =>
-      currentTurn === "dandelion" ? "wind" : "dandelion",
-    );
-  };
-
-  const handleWindDirectionPress = (direction: Direction) => {
-    if (playerTurn !== "wind") {
-      return;
-    }
-    if (usedDirections.includes(direction)) {
-      return;
-    }
-
-    console.log("wind direction:", direction);
-    setCells((currentCells) => blowSeeds(currentCells, direction));
-    setUsedDirections((currentDirections) => [...currentDirections, direction]);
-    setPlayerTurn("dandelion");
-  };
-
   const handleCellPress = (row: number, col: number, id: number) => {
+    if (winner) {
+      return;
+    }
     if (playerTurn !== "dandelion") {
       return;
     }
@@ -156,13 +51,52 @@ const useDandelions = () => {
     setPlayerTurn("wind");
   };
 
+  const handleWindDirectionPress = (direction: Direction) => {
+    if (winner) {
+      return;
+    }
+
+    if (playerTurn !== "wind") {
+      return;
+    }
+
+    if (usedDirections.includes(direction)) {
+      return;
+    }
+
+    const newCells = blowDandelionSeeds(cells, direction);
+
+    const newUsedDirections = [...usedDirections, direction];
+
+    const newWinner = checkDandelionsWinner(newCells, newUsedDirections);
+
+    setCells(newCells);
+    setUsedDirections(newUsedDirections);
+    setWinner(newWinner);
+
+    if (newWinner) {
+      return;
+    }
+
+    setPlayerTurn("dandelion");
+  };
+
+  const handleResetGame = () => {
+    setCells(createDandelionBoard());
+    setPlayerTurn("dandelion");
+    setUsedDirections([]);
+    setWinner(null);
+  };
+
   return {
     cells,
     playerTurn,
     currentPlayerText,
     waitingText,
-    handleCellPress,
     usedDirections,
+    winner,
+    gameOver: winner !== null,
+    handleCellPress,
     handleWindDirectionPress,
     handleResetGame,
   };

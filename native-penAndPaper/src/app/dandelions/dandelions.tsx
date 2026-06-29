@@ -20,8 +20,10 @@ const Dandelions = () => {
     cells,
     currentPlayerText,
     waitingText,
-    handleCellPress,
     usedDirections,
+    winner,
+    gameOver,
+    handleCellPress,
     handleWindDirectionPress,
     handleResetGame,
   } = useDandelions()
@@ -43,19 +45,27 @@ const Dandelions = () => {
         <Text style={globalStyles.title}>
           Dandelions
         </Text>
-        
+
         <Button
           title='Restart Game'
           onPress={handleResetGame}
         />
 
         <Text style={globalStyles.text}>
-          {currentPlayerText}
+          {gameOver ? 'Game Over' : currentPlayerText}
         </Text>
 
-        <Text style={globalStyles.text}>
-          {waitingText}
-        </Text>
+        {!gameOver && (
+          <Text style={globalStyles.text}>
+            {waitingText}
+          </Text>
+        )}
+
+        {gameOver && winner && (
+          <Text style={globalStyles.text}>
+            Winner: {winner.toUpperCase()}
+          </Text>
+        )}
 
         <DandelionsBoardSvg
           cells={cells}
