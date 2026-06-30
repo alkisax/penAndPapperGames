@@ -94,6 +94,15 @@ export default function Index() {
             Hex
           </Text>
         </Pressable>
+
+        <Pressable
+          style={globalStyles.primaryButton}
+          onPress={() => router.push('/hedron/hedron')}
+        >
+          <Text style={globalStyles.primaryButtonText}>
+            Hedron
+          </Text>
+        </Pressable>
       </View>
     </View>
   )

@@ -1,3 +1,4 @@
+// native-penAndPaper\src\components\svg\SvgSprites\OSprite.tsx
 import {
   Circle,
   G,
