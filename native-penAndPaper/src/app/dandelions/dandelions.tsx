@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { Button, Switch, Text, View, } from 'react-native'
+import { Button, Pressable, Switch, Text, View, } from 'react-native'
 import { router } from 'expo-router'
 
 import Navbar from '@/layout/Navbar'
@@ -9,9 +9,11 @@ import DandelionsBoardSvg from '@/components/svg/dandelion/DandelionsBoardSvg'
 import DandelionsCompassSvg from '@/components/svg/dandelion/DandelionsCompassSvg'
 import useDandelions from '@/hooks/dandelions/useDandelions'
 import useDandelionsMultiplayer from '@/hooks/dandelions/useDandelionsMultiplayer'
+import { createRibbonStyles } from '@/styles/ribbon.styles'
 
 const Dandelions = () => {
   const { colors } = useContext(ThemeContext)
+  const ribbonStyles = createRibbonStyles(colors)
   const globalStyles = createGlobalStyles(colors)
 
   const {
@@ -54,109 +56,77 @@ const Dandelions = () => {
       />
 
       <View style={globalStyles.centerContent}>
-        <View
-          style={{
-            width: '96%',
-            paddingVertical: 6,
-            paddingHorizontal: 10,
-            borderRadius: 12,
-            backgroundColor: colors.boardBackground,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 8,
-          }}
-        >
-          <View>
-            <Text
-              style={[
-                globalStyles.text,
-                {
-                  fontSize: 13,
-                  fontWeight: '700',
-                },
-              ]}
-            >
-              Dandelions
-            </Text>
+<View style={ribbonStyles.ribbon}>
+  <View style={ribbonStyles.titleBlock}>
+    <Text style={ribbonStyles.title}>
+      Dandelions
+    </Text>
 
-            <Text
-              style={[
-                globalStyles.text,
-                {
-                  fontSize: 11,
-                  opacity: 0.75,
-                },
-              ]}
-            >
-              {gameOver
-                ? `Winner: ${winner?.toUpperCase()}`
-                : turnText}
-            </Text>
-          </View>
+    <Text style={ribbonStyles.subtitle}>
+      {gameOver
+        ? `Winner: ${winner?.toUpperCase()}`
+        : turnText}
+    </Text>
+  </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 8,
-            }}
-          >
-            <View
-              style={{
-                alignItems: 'center',
-              }}
-            >
-              <Text
-                style={[
-                  globalStyles.text,
-                  {
-                    fontSize: 10,
-                  },
-                ]}
-              >
-                D AI
-              </Text>
+  <View style={ribbonStyles.actions}>
+    <View
+      style={{
+        alignItems: 'center',
+      }}
+    >
+      <Text style={ribbonStyles.smallLabel}>
+        D AI
+      </Text>
 
-              <Switch
-                value={isDandelionAi}
-                onValueChange={setIsDandelionAi}
-              />
-            </View>
+      <Switch
+        value={isDandelionAi}
+        onValueChange={setIsDandelionAi}
+      />
+    </View>
 
-            <View
-              style={{
-                alignItems: 'center',
-              }}
-            >
-              <Text
-                style={[
-                  globalStyles.text,
-                  {
-                    fontSize: 10,
-                  },
-                ]}
-              >
-                W AI
-              </Text>
+    <View
+      style={{
+        alignItems: 'center',
+      }}
+    >
+      <Text style={ribbonStyles.smallLabel}>
+        W AI
+      </Text>
 
-              <Switch
-                value={isWindAi}
-                onValueChange={setIsWindAi}
-              />
-            </View>
+      <Switch
+        value={isWindAi}
+        onValueChange={setIsWindAi}
+      />
+    </View>
 
-            <Button
-              title='(i)'
-              onPress={() => router.push('/dandelions/dandelionsInfo')}
-            />
+    <Pressable
+      style={ribbonStyles.button}
+      onPress={() => router.push('/dandelions/dandelionsInfo')}
+    >
+      <Text style={ribbonStyles.buttonText}>
+        i
+      </Text>
+    </Pressable>
 
-            <Button
-              title='↻'
-              onPress={handleResetGame}
-            />
-          </View>
-        </View>
+    <Pressable
+      style={[
+        ribbonStyles.button,
+        ribbonStyles.buttonActive,
+      ]}
+      onPress={handleResetGame}
+    >
+      <Text
+        style={[
+          ribbonStyles.buttonText,
+          ribbonStyles.buttonTextActive,
+        ]}
+      >
+        ↻
+      </Text>
+    </Pressable>
+  </View>
+</View>
 
         <DandelionsBoardSvg
           cells={cells}

@@ -3,6 +3,7 @@ import { Button, Pressable, ScrollView, Switch, Text, View } from 'react-native'
 import Navbar from '@/layout/Navbar'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
+import { createRibbonStyles } from '@/styles/ribbon.styles'
 import { router } from 'expo-router'
 import PaperAirfightBoardSvg from '@/components/svg/paperairfight/paperAirfightBoardSvg'
 import SlingshotComponentSvg from '@/components/svg/slingshot/SlingshotComponentSvg'
@@ -12,6 +13,7 @@ const PaperAirfight = () => {
   // Theme
   const { colors } = useContext(ThemeContext)
   const globalStyles = createGlobalStyles(colors)
+  const ribbonStyles = createRibbonStyles(colors)
 
   // Game + multiplayer logic
   const {
@@ -65,45 +67,23 @@ const PaperAirfight = () => {
       >
         {/* Header ribbon */}
         <View
-          style={{
-            width: '96%',
-            paddingVertical: 6,
-            paddingHorizontal: 10,
-            borderRadius: 12,
-            backgroundColor: colors.boardBackground,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 8,
-            marginBottom: 10,
-          }}
+          style={[
+            ribbonStyles.ribbon,
+            {
+              marginBottom: 10,
+            },
+          ]}
         >
-          <View
-            style={{
-              flex: 1,
-            }}
-          >
+          <View style={ribbonStyles.titleBlock}>
             <Text
-              style={[
-                globalStyles.text,
-                {
-                  fontSize: 13,
-                  fontWeight: '700',
-                },
-              ]}
+              style={ribbonStyles.title}
               numberOfLines={1}
             >
               Paper Airfight
             </Text>
 
             <Text
-              style={[
-                globalStyles.text,
-                {
-                  fontSize: 11,
-                  opacity: 0.75,
-                },
-              ]}
+              style={ribbonStyles.subtitle}
               numberOfLines={1}
             >
               {gameOver && winner
@@ -112,27 +92,14 @@ const PaperAirfight = () => {
             </Text>
           </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 6,
-            }}
-          >
+          <View style={ribbonStyles.actions}>
             {!isConnected && (
               <View
                 style={{
                   alignItems: 'center',
                 }}
               >
-                <Text
-                  style={[
-                    globalStyles.text,
-                    {
-                      fontSize: 10,
-                    },
-                  ]}
-                >
+                <Text style={ribbonStyles.smallLabel}>
                   O AI
                 </Text>
 
@@ -150,49 +117,27 @@ const PaperAirfight = () => {
             )}
 
             <Pressable
+              style={ribbonStyles.button}
               onPress={() =>
                 router.push('/paperairfight/paperAirfightInfo')
               }
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: colors.background,
-              }}
             >
-              <Text
-                style={[
-                  globalStyles.text,
-                  {
-                    fontSize: 16,
-                    fontWeight: '700',
-                  },
-                ]}
-              >
+              <Text style={ribbonStyles.buttonText}>
                 ?
               </Text>
             </Pressable>
 
             <Pressable
+              style={[
+                ribbonStyles.button,
+                ribbonStyles.buttonActive,
+              ]}
               onPress={() => handleResetGame('manual')}
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: colors.background,
-              }}
             >
               <Text
                 style={[
-                  globalStyles.text,
-                  {
-                    fontSize: 18,
-                    fontWeight: '700',
-                  },
+                  ribbonStyles.buttonText,
+                  ribbonStyles.buttonTextActive,
                 ]}
               >
                 ↻

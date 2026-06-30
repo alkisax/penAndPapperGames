@@ -7,14 +7,16 @@ import {
 } from "@/utils/hexUtils/hexUtils";
 
 import type { HexCell, HexPlayer } from "@/utils/hexUtils/hexUtils";
+
 import { suggestHexMove } from "@/utils/hexUtils/suggestHexMove";
 
 type Props = {
   boardSize: number;
   isPlayer2Ai?: boolean;
+  onAiMove?: (cellId: number) => Promise<void> | void;
 };
 
-export const useHex = ({ boardSize, isPlayer2Ai = false }: Props) => {
+export const useHex = ({ boardSize, isPlayer2Ai = false, onAiMove }: Props) => {
   const [cells, setCells] = useState<HexCell[]>(() =>
     createHexCells(boardSize),
   );
@@ -26,7 +28,7 @@ export const useHex = ({ boardSize, isPlayer2Ai = false }: Props) => {
   const [moveCount, setMoveCount] = useState(0);
   const [swapAvailable, setSwapAvailable] = useState(false);
 
-  const handleCellPress = (cellId: number) => {
+  const applyMove = (cellId: number) => {
     if (winner) return false;
 
     const selectedCell = cells.find((cell) => cell.id === cellId);
@@ -57,19 +59,14 @@ export const useHex = ({ boardSize, isPlayer2Ai = false }: Props) => {
     }
 
     const nextMoveCount = moveCount + 1;
-
     setMoveCount(nextMoveCount);
 
-    // Μετά την πρώτη κίνηση του Player 1,
-    // ο Player 2 μπορεί να κάνει swap.
     if (currentPlayer === "player1" && moveCount === 0) {
       setSwapAvailable(true);
       setCurrentPlayer("player2");
       return true;
     }
 
-    // Αν ο Player 2 παίξει κανονικά αντί για swap,
-    // το swap παύει να είναι διαθέσιμο.
     if (currentPlayer === "player2" && moveCount === 1) {
       setSwapAvailable(false);
     }
@@ -79,7 +76,15 @@ export const useHex = ({ boardSize, isPlayer2Ai = false }: Props) => {
     return true;
   };
 
-  const handleSwapOpeningMove = () => {
+  const handleCellPress = (cellId: number) => {
+    return applyMove(cellId);
+  };
+
+  const handleRemoteCellPress = (cellId: number) => {
+    return applyMove(cellId);
+  };
+
+  const applySwapOpeningMove = () => {
     if (winner) return false;
     if (!swapAvailable) return false;
     if (moveCount !== 1) return false;
@@ -96,12 +101,25 @@ export const useHex = ({ boardSize, isPlayer2Ai = false }: Props) => {
 
     setCells(nextCells);
     setSwapAvailable(false);
-
-    // Ο Player 2 πήρε την πρώτη κίνηση.
-    // Τώρα παίζει ξανά ο Player 1.
     setCurrentPlayer("player1");
 
     return true;
+  };
+
+  const handleSwapOpeningMove = () => {
+    return applySwapOpeningMove();
+  };
+
+  const handleRemoteSwapOpeningMove = () => {
+    return applySwapOpeningMove();
+  };
+
+  const restartGame = () => {
+    setCells(createHexCells(boardSize));
+    setCurrentPlayer("player1");
+    setWinner(null);
+    setMoveCount(0);
+    setSwapAvailable(false);
   };
 
   useEffect(() => {
@@ -118,21 +136,15 @@ export const useHex = ({ boardSize, isPlayer2Ai = false }: Props) => {
 
       if (!suggestedMove) return;
 
-      console.log("Hex AI move:", suggestedMove);
+      const moveWasApplied = handleCellPress(suggestedMove.cellId);
 
-      handleCellPress(suggestedMove.cellId);
+      if (moveWasApplied) {
+        onAiMove?.(suggestedMove.cellId);
+      }
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [isPlayer2Ai, winner, currentPlayer, cells, boardSize]);
-
-  const restartGame = () => {
-    setCells(createHexCells(boardSize));
-    setCurrentPlayer("player1");
-    setWinner(null);
-    setMoveCount(0);
-    setSwapAvailable(false);
-  };
+  }, [isPlayer2Ai, winner, currentPlayer, cells, boardSize, onAiMove]);
 
   return {
     boardSize,
@@ -143,7 +155,9 @@ export const useHex = ({ boardSize, isPlayer2Ai = false }: Props) => {
     swapAvailable,
 
     handleCellPress,
+    handleRemoteCellPress,
     handleSwapOpeningMove,
+    handleRemoteSwapOpeningMove,
     restartGame,
   };
 };

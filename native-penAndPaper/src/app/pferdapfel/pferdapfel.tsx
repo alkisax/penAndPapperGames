@@ -11,12 +11,14 @@ import PferdApfelBoard from '@/components/svg/pferdapfel/PferdApfelBoard'
 import Navbar from '@/layout/Navbar'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
+import { createRibbonStyles } from '@/styles/ribbon.styles'
 import { usePferdApfelMultiplayer } from '@/hooks/pferdapfel/usePferdApfelMultiplayer'
 import { router } from 'expo-router'
 
 const Pferdapfel = () => {
   const { colors } = useContext(ThemeContext)
   const globalStyles = createGlobalStyles(colors)
+  const ribbonStyles = createRibbonStyles(colors)
 
   const {
     roomCode,
@@ -54,48 +56,76 @@ const Pferdapfel = () => {
       />
 
       <View style={globalStyles.centerContent}>
-        <Text style={globalStyles.title}>
-          Pferdäpfel
-        </Text>
-        <Pressable
-          style={globalStyles.secondaryButton}
-          onPress={() => router.push('/pferdapfel/pferdApfelInfo')}
-        >
-          <Text style={globalStyles.text}>
-            Info / Rules
-          </Text>
-        </Pressable>
-
-        <Text style={globalStyles.text}>
-          {turnText}
-        </Text>
-        {!isConnected && (
-          <View style={globalStyles.row}>
-            <Text style={globalStyles.text}>
-              Red AI
+        <View style={ribbonStyles.ribbon}>
+          <View style={ribbonStyles.titleBlock}>
+            <Text
+              style={ribbonStyles.title}
+              numberOfLines={1}
+            >
+              Pferdäpfel
             </Text>
 
-            <Switch
-              value={isRedAi}
-              onValueChange={setIsRedAi}
-            />
+            <Text
+              style={ribbonStyles.subtitle}
+              numberOfLines={1}
+            >
+              {gameOver && winner
+                ? `Winner: ${winner}`
+                : turnText}
+            </Text>
           </View>
-        )}
 
-        {gameOver && winner && (
-          <Text style={globalStyles.text}>
-            Winner: {winner}
-          </Text>
-        )}
+          <View style={ribbonStyles.actions}>
+            {!isConnected && (
+              <View
+                style={{
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={ribbonStyles.smallLabel}>
+                  Red AI
+                </Text>
 
-        <Pressable
-          style={globalStyles.primaryButton}
-          onPress={() => handleResetGame('manual')}
-        >
-          <Text style={globalStyles.primaryButtonText}>
-            Restart Game
-          </Text>
-        </Pressable>
+                <Switch
+                  value={isRedAi}
+                  onValueChange={setIsRedAi}
+                  style={{
+                    transform: [
+                      { scaleX: 0.75 },
+                      { scaleY: 0.75 },
+                    ],
+                  }}
+                />
+              </View>
+            )}
+
+            <Pressable
+              style={ribbonStyles.button}
+              onPress={() => router.push('/pferdapfel/pferdApfelInfo')}
+            >
+              <Text style={ribbonStyles.buttonText}>
+                i
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={[
+                ribbonStyles.button,
+                ribbonStyles.buttonActive,
+              ]}
+              onPress={() => handleResetGame('manual')}
+            >
+              <Text
+                style={[
+                  ribbonStyles.buttonText,
+                  ribbonStyles.buttonTextActive,
+                ]}
+              >
+                ↻
+              </Text>
+            </Pressable>
+          </View>
+        </View>
 
         <PferdApfelBoard
           knights={knights}

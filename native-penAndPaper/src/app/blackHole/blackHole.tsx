@@ -9,12 +9,14 @@ import { useContext } from 'react'
 import { createBlackHoleStyles } from '@/styles/blackHole.styles'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
+import { createRibbonStyles } from '@/styles/ribbon.styles'
 
 const BlackHole = () => {
   const { colors } = useContext(ThemeContext)
 
   const styles = createBlackHoleStyles(colors)
   const globalStyles = createGlobalStyles(colors)
+  const ribbonStyles = createRibbonStyles(colors)
 
   const {
     roomCode,
@@ -59,147 +61,127 @@ const BlackHole = () => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.settingsCard}>
-          <Text style={styles.settingsTitle}>
-            Game Settings
-          </Text>
-
-          <Pressable
-            style={globalStyles.secondaryButton}
-            onPress={() => router.push('/blackHole/blackHoleInfo')}
+          <View
+            style={[
+              ribbonStyles.ribbon,
+              ribbonStyles.ribbonColumn,
+            ]}
           >
-            <Text style={globalStyles.text}>
-              Game Rules
-            </Text>
-          </Pressable>
-
-          <View style={styles.settingRow}>
-            <Text style={styles.settingLabel}>
-              Players
-            </Text>
-
-            <View style={styles.segmentedRow}>
-              <Pressable
-                style={[
-                  globalStyles.segmentButton,
-                  numberOfPlayers === 2 &&
-                  globalStyles.segmentButtonActive,
-                ]}
-                onPress={() => handleNumberOfPlayersChange(2)}
-              >
+            <View style={ribbonStyles.headerRow}>
+              <View style={ribbonStyles.titleBlock}>
                 <Text
-                  style={[
-                    globalStyles.segmentButtonText,
-                    numberOfPlayers === 2 &&
-                    globalStyles.segmentButtonTextActive,
-                  ]}
+                  style={ribbonStyles.title}
+                  numberOfLines={1}
                 >
-                  2P
+                  Black Hole
                 </Text>
-              </Pressable>
 
-              <Pressable
-                style={[
-                  globalStyles.segmentButton,
-                  numberOfPlayers === 3 &&
-                  globalStyles.segmentButtonActive,
-                ]}
-                onPress={() => handleNumberOfPlayersChange(3)}
-              >
                 <Text
-                  style={[
-                    globalStyles.segmentButtonText,
-                    numberOfPlayers === 3 &&
-                    globalStyles.segmentButtonTextActive,
-                  ]}
+                  style={ribbonStyles.subtitle}
+                  numberOfLines={1}
                 >
-                  3P
+                  {gameOver
+                    ? `Winner${winners.length > 1 ? 's' : ''}: Player ${winners.join(', Player ')}`
+                    : turnText}
                 </Text>
-              </Pressable>
-            </View>
-          </View>
+              </View>
 
-          <View style={styles.settingRow}>
-            <Text style={styles.settingLabel}>
-              P1
-            </Text>
-
-            <View style={styles.segmentedRow}>
-              {(['local', 'ai', 'remote'] as const).map((value) => (
+              <View style={ribbonStyles.actions}>
                 <Pressable
-                  key={`p1-${value}`}
+                  style={ribbonStyles.button}
+                  onPress={() => router.push('/blackHole/blackHoleInfo')}
+                >
+                  <Text style={ribbonStyles.buttonText}>
+                    i
+                  </Text>
+                </Pressable>
+
+                <Pressable
                   style={[
-                    globalStyles.segmentButton,
-                    playerControllers.player1 === value &&
-                    globalStyles.segmentButtonActive,
+                    ribbonStyles.button,
+                    ribbonStyles.buttonActive,
                   ]}
-                  onPress={() => setPlayerController('player1', value)}
+                  onPress={() => handleResetGame('manual')}
                 >
                   <Text
                     style={[
-                      globalStyles.segmentButtonText,
-                      playerControllers.player1 === value &&
-                      globalStyles.segmentButtonTextActive,
+                      ribbonStyles.buttonText,
+                      ribbonStyles.buttonTextActive,
                     ]}
                   >
-                    {value}
+                    ↻
                   </Text>
                 </Pressable>
-              ))}
+              </View>
             </View>
-          </View>
 
-          <View style={styles.settingRow}>
-            <Text style={styles.settingLabel}>
-              P2
-            </Text>
-
-            <View style={styles.segmentedRow}>
-              {(['local', 'ai', 'remote'] as const).map((value) => (
-                <Pressable
-                  key={`p2-${value}`}
-                  style={[
-                    globalStyles.segmentButton,
-                    playerControllers.player2 === value &&
-                    globalStyles.segmentButtonActive,
-                  ]}
-                  onPress={() => setPlayerController('player2', value)}
-                >
-                  <Text
-                    style={[
-                      globalStyles.segmentButtonText,
-                      playerControllers.player2 === value &&
-                      globalStyles.segmentButtonTextActive,
-                    ]}
-                  >
-                    {value}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-
-          {numberOfPlayers === 3 && (
-            <View style={styles.settingRow}>
-              <Text style={styles.settingLabel}>
-                P3
+            <View style={ribbonStyles.controlRow}>
+              <Text style={ribbonStyles.controlLabel}>
+                Players
               </Text>
 
-              <View style={styles.segmentedRow}>
+              <View style={ribbonStyles.segmentGroup}>
+                <Pressable
+                  style={[
+                    ribbonStyles.miniSegmentButton,
+                    numberOfPlayers === 2 &&
+                    ribbonStyles.miniSegmentButtonActive,
+                  ]}
+                  onPress={() => handleNumberOfPlayersChange(2)}
+                >
+                  <Text
+                    style={[
+                      ribbonStyles.miniSegmentButtonText,
+                      numberOfPlayers === 2 &&
+                      ribbonStyles.miniSegmentButtonTextActive,
+                    ]}
+                  >
+                    2P
+                  </Text>
+                </Pressable>
+
+                <Pressable
+                  style={[
+                    ribbonStyles.miniSegmentButton,
+                    numberOfPlayers === 3 &&
+                    ribbonStyles.miniSegmentButtonActive,
+                  ]}
+                  onPress={() => handleNumberOfPlayersChange(3)}
+                >
+                  <Text
+                    style={[
+                      ribbonStyles.miniSegmentButtonText,
+                      numberOfPlayers === 3 &&
+                      ribbonStyles.miniSegmentButtonTextActive,
+                    ]}
+                  >
+                    3P
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+
+            <View style={ribbonStyles.controlRow}>
+              <Text style={ribbonStyles.controlLabel}>
+                P1
+              </Text>
+
+              <View style={ribbonStyles.segmentGroup}>
                 {(['local', 'ai', 'remote'] as const).map((value) => (
                   <Pressable
-                    key={`p3-${value}`}
+                    key={`p1-${value}`}
                     style={[
-                      globalStyles.segmentButton,
-                      playerControllers.player3 === value &&
-                      globalStyles.segmentButtonActive,
+                      ribbonStyles.miniSegmentButton,
+                      playerControllers.player1 === value &&
+                      ribbonStyles.miniSegmentButtonActive,
                     ]}
-                    onPress={() => setPlayerController('player3', value)}
+                    onPress={() => setPlayerController('player1', value)}
                   >
                     <Text
                       style={[
-                        globalStyles.segmentButtonText,
-                        playerControllers.player3 === value &&
-                        globalStyles.segmentButtonTextActive,
+                        ribbonStyles.miniSegmentButtonText,
+                        playerControllers.player1 === value &&
+                        ribbonStyles.miniSegmentButtonTextActive,
                       ]}
                     >
                       {value}
@@ -208,39 +190,85 @@ const BlackHole = () => {
                 ))}
               </View>
             </View>
-          )}
 
-          <Button
-            title='Reset Game'
-            onPress={() => handleResetGame('manual')}
-          />
-
-          <Text style={styles.playerText}>
-            {turnText}
-          </Text>
-
-          {gameOver && (
-            <View style={styles.endGamePanel}>
-              <Text style={styles.playerText}>
-                Winner{winners.length > 1 ? 's' : ''}: Player{' '}
-                {winners.join(', Player ')}
+            <View style={ribbonStyles.controlRow}>
+              <Text style={ribbonStyles.controlLabel}>
+                P2
               </Text>
 
-              <Text style={styles.scoreText}>
-                Player 1 Score: {scores.player1}
-              </Text>
-
-              <Text style={styles.scoreText}>
-                Player 2 Score: {scores.player2}
-              </Text>
-
-              {numberOfPlayers === 3 && (
-                <Text style={styles.scoreText}>
-                  Player 3 Score: {scores.player3}
-                </Text>
-              )}
+              <View style={ribbonStyles.segmentGroup}>
+                {(['local', 'ai', 'remote'] as const).map((value) => (
+                  <Pressable
+                    key={`p2-${value}`}
+                    style={[
+                      ribbonStyles.miniSegmentButton,
+                      playerControllers.player2 === value &&
+                      ribbonStyles.miniSegmentButtonActive,
+                    ]}
+                    onPress={() => setPlayerController('player2', value)}
+                  >
+                    <Text
+                      style={[
+                        ribbonStyles.miniSegmentButtonText,
+                        playerControllers.player2 === value &&
+                        ribbonStyles.miniSegmentButtonTextActive,
+                      ]}
+                    >
+                      {value}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
             </View>
-          )}
+
+            {numberOfPlayers === 3 && (
+              <View style={ribbonStyles.controlRow}>
+                <Text style={ribbonStyles.controlLabel}>
+                  P3
+                </Text>
+
+                <View style={ribbonStyles.segmentGroup}>
+                  {(['local', 'ai', 'remote'] as const).map((value) => (
+                    <Pressable
+                      key={`p3-${value}`}
+                      style={[
+                        ribbonStyles.miniSegmentButton,
+                        playerControllers.player3 === value &&
+                        ribbonStyles.miniSegmentButtonActive,
+                      ]}
+                      onPress={() => setPlayerController('player3', value)}
+                    >
+                      <Text
+                        style={[
+                          ribbonStyles.miniSegmentButtonText,
+                          playerControllers.player3 === value &&
+                          ribbonStyles.miniSegmentButtonTextActive,
+                        ]}
+                      >
+                        {value}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+            )}
+
+            {gameOver && (
+              <View style={ribbonStyles.scorePanel}>
+                <Text style={ribbonStyles.scoreTitle}>
+                  Winner{winners.length > 1 ? 's' : ''}: Player{' '}
+                  {winners.join(', Player ')}
+                </Text>
+
+                <Text style={ribbonStyles.scoreText}>
+                  P1: {scores.player1} | P2: {scores.player2}
+                  {numberOfPlayers === 3
+                    ? ` | P3: ${scores.player3}`
+                    : ''}
+                </Text>
+              </View>
+            )}
+          </View>
 
           <View style={styles.boardContainer}>
             <BlackHoleBoard

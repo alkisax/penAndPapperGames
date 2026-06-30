@@ -1,10 +1,10 @@
 import {
   Pressable,
+  Switch,
   Text,
   View,
-  Switch,
 } from 'react-native'
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import { router } from 'expo-router'
 
 import Navbar from '@/layout/Navbar'
@@ -12,29 +12,41 @@ import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
 import { createRibbonStyles } from '@/styles/ribbon.styles'
 import HexBoardSvg from '@/components/svg/hex/HexBoardSvg'
-import { useHex } from '@/hooks/hex/useHex'
+import { useHexMultiplayer } from '@/hooks/hex/useHexMultiplayer'
 
 const BOARD_SIZE = 9
 
 const Hex = () => {
-  const [isPlayer2Ai, setIsPlayer2Ai] = useState(false)
-
   const { colors } = useContext(ThemeContext)
+
   const globalStyles = createGlobalStyles(colors)
   const ribbonStyles = createRibbonStyles(colors)
 
   const {
+    roomCode,
+    setRoomCode,
+    username,
+    setUsername,
+    isConnected,
+    hasPeer,
+    connectToChatRoom,
+    disconnectFromChatRoom,
+
     boardSize,
     cells,
     currentPlayer,
     winner,
     swapAvailable,
-    handleCellPress,
-    handleSwapOpeningMove,
-    restartGame,
-  } = useHex({
-    boardSize: BOARD_SIZE,
+    turnText,
+
+    handleHexCellPress,
+    handleHexSwapOpeningMove,
+    handleResetGame,
+
     isPlayer2Ai,
+    setIsPlayer2Ai,
+  } = useHexMultiplayer({
+    boardSize: BOARD_SIZE,
   })
 
   const currentPlayerColor =
@@ -42,43 +54,21 @@ const Hex = () => {
       ? colors.player1
       : colors.player3
 
-  const turnText = winner
-    ? `Winner: ${winner === 'player1'
-      ? 'Player 1'
-      : 'Player 2'
-    }`
-    : `Current: ${currentPlayer === 'player1'
-      ? 'Player 1'
-      : 'Player 2'
-    }`
-
   return (
     <View style={globalStyles.screen}>
       <Navbar
-        roomId=''
-        setRoomId={() => { }}
-        username=''
-        setUsername={() => { }}
-        handleConnectSocket={async () => { }}
-        handleDisconnectSocket={async () => { }}
-        isConnected={false}
-        hasPeer={false}
+        roomId={roomCode}
+        setRoomId={setRoomCode}
+        username={username}
+        setUsername={setUsername}
+        handleConnectSocket={connectToChatRoom}
+        handleDisconnectSocket={disconnectFromChatRoom}
+        isConnected={isConnected}
+        hasPeer={hasPeer}
       />
 
       <View style={globalStyles.centerContent}>
-        <View
-          style={{
-            width: '96%',
-            paddingVertical: 6,
-            paddingHorizontal: 10,
-            borderRadius: 12,
-            backgroundColor: colors.boardBackground,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 8,
-          }}
-        >
+        <View style={ribbonStyles.ribbon}>
           <View style={ribbonStyles.titleBlock}>
             <Text style={ribbonStyles.title}>
               Hex
@@ -89,33 +79,35 @@ const Hex = () => {
             </Text>
           </View>
 
-          <View
-            style={{
-              alignItems: 'center',
-            }}
-          >
-            <Text
-              style={[
-                globalStyles.text,
-                {
-                  fontSize: 10,
-                },
-              ]}
-            >
-              P2 AI
-            </Text>
-
-            <Switch
-              value={isPlayer2Ai}
-              onValueChange={setIsPlayer2Ai}
-            />
-          </View>
-
           <View style={ribbonStyles.actions}>
+            {!isConnected && (
+              <View
+                style={{
+                  alignItems: 'center',
+                }}
+              >
+                <Text
+                  style={[
+                    globalStyles.text,
+                    {
+                      fontSize: 10,
+                    },
+                  ]}
+                >
+                  P2 AI
+                </Text>
+
+                <Switch
+                  value={isPlayer2Ai}
+                  onValueChange={setIsPlayer2Ai}
+                />
+              </View>
+            )}
+
             {swapAvailable && !winner && (
               <Pressable
                 style={ribbonStyles.button}
-                onPress={handleSwapOpeningMove}
+                onPress={handleHexSwapOpeningMove}
               >
                 <Text style={ribbonStyles.buttonText}>
                   Swap
@@ -137,7 +129,7 @@ const Hex = () => {
                 ribbonStyles.button,
                 ribbonStyles.buttonActive,
               ]}
-              onPress={restartGame}
+              onPress={() => handleResetGame('manual')}
             >
               <Text
                 style={[
@@ -153,7 +145,10 @@ const Hex = () => {
 
         {winner && (
           <Text style={globalStyles.text}>
-            {turnText}
+            Winner:{' '}
+            {winner === 'player1'
+              ? 'Player 1'
+              : 'Player 2'}
           </Text>
         )}
 
@@ -165,7 +160,7 @@ const Hex = () => {
           player1Color={colors.player1}
           player2Color={colors.player3}
           currentPlayerColor={currentPlayerColor}
-          onCellPress={handleCellPress}
+          onCellPress={handleHexCellPress}
         />
       </View>
     </View>
