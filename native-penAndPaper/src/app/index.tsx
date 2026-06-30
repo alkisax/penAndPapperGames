@@ -16,6 +16,7 @@ import DandelionsPreviewSvg from '@/components/svg/previewSvgs/DandelionsPreview
 import HexPreviewSvg from '@/components/svg/previewSvgs/HexPreviewSvg'
 import HedronPreviewSvg from '@/components/svg/previewSvgs/HedronPreviewSvg'
 import { mainIndexStyles } from '@/styles/mainIndex.styles'
+import DotsAndBoxesPreviewSvg from '@/components/svg/previewSvgs/DotsAndBoxesPreviewSvg'
 
 export default function Index() {
   const { colors } = useContext(ThemeContext)
@@ -251,6 +252,20 @@ export default function Index() {
             ]}
             onPress={() => router.push('/dotsAndBoxes/dotsAndBoxes')}
           >
+            <View
+              pointerEvents='none'
+              style={mainIndexStyles.dotsAndBoxesPreview}
+            >
+              <DotsAndBoxesPreviewSvg
+                width={125}
+                height={125}
+                boardBackground={colors.boardBackground}
+                boardLine={colors.boardLine}
+                player1Color={colors.player1}
+                player2Color={colors.player3}
+              />
+            </View>
+
             <Text
               style={[
                 globalStyles.primaryButtonText,
