@@ -1,7 +1,7 @@
 // src/app/index.tsx
 
 import { useContext } from 'react'
-import { View, Pressable, Text } from 'react-native'
+import { View, Pressable, Text, ScrollView } from 'react-native'
 import { router } from 'expo-router'
 
 import Navbar from '@/layout/Navbar'
@@ -9,6 +9,13 @@ import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
 import { useRoomContext } from '@/context/RoomContext'
 import ChatBox from '@/components/chat/ChatBox'
+import BlackHolePreviewSvg from '@/components/svg/previewSvgs/BlackHolePreviewSvg'
+import PferdApfelPreviewSvg from '@/components/svg/previewSvgs/PferdApfelPreviewSvg'
+import PaperAirfightPreviewSvg from '@/components/svg/previewSvgs/PaperAirfightPreviewSvg'
+import DandelionsPreviewSvg from '@/components/svg/previewSvgs/DandelionsPreviewSvg'
+import HexPreviewSvg from '@/components/svg/previewSvgs/HexPreviewSvg'
+import HedronPreviewSvg from '@/components/svg/previewSvgs/HedronPreviewSvg'
+import { mainIndexStyles } from '@/styles/mainIndex.styles'
 
 export default function Index() {
   const { colors } = useContext(ThemeContext)
@@ -40,70 +47,222 @@ export default function Index() {
         hasPeer={hasPeer}
       />
 
-      <View style={globalStyles.centerContent}>
-        <Pressable
-          style={globalStyles.primaryButton}
-          onPress={() => router.push('/blackHole/blackHole')}
-        >
-          <Text style={globalStyles.primaryButtonText}>
-            Black Hole
-          </Text>
-        </Pressable>
+      <ScrollView
+        contentContainerStyle={mainIndexStyles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={mainIndexStyles.grid}>
+          <Pressable
+            style={[
+              globalStyles.primaryButton,
+              mainIndexStyles.gameCard,
+            ]}
+            onPress={() => router.push('/blackHole/blackHole')}
+          >
+            <View
+              pointerEvents='none'
+              style={mainIndexStyles.blackHolePreview}
+            >
+              <BlackHolePreviewSvg
+                width={130}
+                height={120}
+                player1Color={colors.player1}
+                player2Color={colors.player2}
+                player3Color={colors.player3}
+                blackHoleColor={colors.blackHole}
+                lineColor={colors.boardLine}
+              />
+            </View>
 
-        <Pressable
-          style={globalStyles.primaryButton}
-          onPress={() => router.push('/pferdapfel/pferdapfel')}
-        >
-          <Text style={globalStyles.primaryButtonText}>
-            Pferdäpfel
-          </Text>
-        </Pressable>
+            <Text
+              style={[
+                globalStyles.primaryButtonText,
+                mainIndexStyles.gameCardText,
+              ]}
+            >
+              Black Hole
+            </Text>
+          </Pressable>
 
-        {/* <Pressable
-          style={globalStyles.primaryButton}
-          onPress={() => router.push('/slingshot/slingshot')}
-        >
-          <Text style={globalStyles.primaryButtonText}>
-            Slingshot Test
-          </Text>
-        </Pressable> */}
+          <Pressable
+            style={[
+              globalStyles.primaryButton,
+              mainIndexStyles.gameCard,
+            ]}
+            onPress={() => router.push('/pferdapfel/pferdapfel')}
+          >
+            <View
+              pointerEvents='none'
+              style={mainIndexStyles.pferdApfelPreview}
+            >
+              <PferdApfelPreviewSvg
+                width={125}
+                height={125}
+                boardBackground={colors.boardBackground}
+                boardLine={colors.boardLine}
+                player1Color={colors.player1}
+                player2Color={colors.player3}
+                blockedColor={colors.deadPiece}
+              />
+            </View>
 
-        <Pressable
-          style={globalStyles.primaryButton}
-          onPress={() => router.push('/paperairfight/paperAirfight')}
-        >
-          <Text style={globalStyles.primaryButtonText}>
-            Paper Airfight
-          </Text>
-        </Pressable>
+            <Text
+              style={[
+                globalStyles.primaryButtonText,
+                mainIndexStyles.gameCardText,
+              ]}
+            >
+              Pferdäpfel
+            </Text>
+          </Pressable>
 
-        <Pressable
-          style={globalStyles.primaryButton}
-          onPress={() => router.push('/dandelions/dandelions')}
-        >
-          <Text style={globalStyles.primaryButtonText}>
-            Dandelions
-          </Text>
-        </Pressable>
+          <Pressable
+            style={[
+              globalStyles.primaryButton,
+              mainIndexStyles.gameCard,
+            ]}
+            onPress={() => router.push('/paperairfight/paperAirfight')}
+          >
+            <View
+              pointerEvents='none'
+              style={mainIndexStyles.paperAirfightPreview}
+            >
+              <PaperAirfightPreviewSvg
+                width={100}
+                height={160}
+                boardBackground={colors.boardBackground}
+                boardLine={colors.boardLine}
+                baseColor={colors.player1}
+                goalColor={colors.player3}
+                player1Color={colors.player1}
+                player2Color={colors.player3}
+              />
+            </View>
 
-        <Pressable
-          style={globalStyles.primaryButton}
-          onPress={() => router.push('/hex/hex')}
-        >
-          <Text style={globalStyles.primaryButtonText}>
-            Hex
-          </Text>
-        </Pressable>
+            <Text
+              style={[
+                globalStyles.primaryButtonText,
+                mainIndexStyles.gameCardText,
+              ]}
+            >
+              Paper Airfight
+            </Text>
+          </Pressable>
 
-        <Pressable
-          style={globalStyles.primaryButton}
-          onPress={() => router.push('/hedron/hedron')}
-        >
-          <Text style={globalStyles.primaryButtonText}>
-            Hedron
-          </Text>
-        </Pressable>
-      </View>
+          <Pressable
+            style={[
+              globalStyles.primaryButton,
+              mainIndexStyles.gameCard,
+            ]}
+            onPress={() => router.push('/dandelions/dandelions')}
+          >
+            <View
+              pointerEvents='none'
+              style={mainIndexStyles.dandelionsPreview}
+            >
+              <DandelionsPreviewSvg
+                width={100}
+                height={100}
+                boardBackground={colors.boardBackground}
+                boardLine={colors.boardLine}
+                dandelionColor={colors.player1}
+                seedColor={colors.player3}
+              />
+            </View>
+
+            <Text
+              style={[
+                globalStyles.primaryButtonText,
+                mainIndexStyles.gameCardText,
+              ]}
+            >
+              Dandelions
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={[
+              globalStyles.primaryButton,
+              mainIndexStyles.gameCard,
+            ]}
+            onPress={() => router.push('/hex/hex')}
+          >
+            <View
+              pointerEvents='none'
+              style={mainIndexStyles.hexPreview}
+            >
+              <HexPreviewSvg
+                width={130}
+                height={110}
+                boardBackground={colors.boardBackground}
+                boardLine={colors.boardLine}
+                player1Color={colors.player1}
+                player2Color={colors.player3}
+              />
+            </View>
+
+            <Text
+              style={[
+                globalStyles.primaryButtonText,
+                mainIndexStyles.gameCardText,
+              ]}
+            >
+              Hex
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={[
+              globalStyles.primaryButton,
+              mainIndexStyles.gameCard,
+            ]}
+            onPress={() => router.push('/hedron/hedron')}
+          >
+            <View
+              pointerEvents='none'
+              style={mainIndexStyles.hedronPreview}
+            >
+              <HedronPreviewSvg
+                width={130}
+                height={130}
+                lineColor={colors.boardLine}
+                emptyColor={colors.boardBackground}
+                player1Color={colors.player1}
+                player2Color={colors.player3}
+                mixedColor='#d88bd8'
+                labelColor={colors.text}
+              />
+            </View>
+
+            <Text
+              style={[
+                globalStyles.primaryButtonText,
+                mainIndexStyles.gameCardText,
+              ]}
+            >
+              Hedron
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={[
+              globalStyles.primaryButton,
+              mainIndexStyles.gameCard,
+            ]}
+            onPress={() => router.push('/dotsAndBoxes/dotsAndBoxes')}
+          >
+            <Text
+              style={[
+                globalStyles.primaryButtonText,
+                mainIndexStyles.gameCardText,
+              ]}
+            >
+              Dots and Boxes
+            </Text>
+          </Pressable>
+        </View>
+      </ScrollView>
+
     </View>
   )
 }
