@@ -1,7 +1,6 @@
-// native-penAndPaper/src/app/hedron/hedron.tsx
-
 import {
   Pressable,
+  Switch,
   Text,
   View,
 } from 'react-native'
@@ -10,44 +9,109 @@ import { useContext } from 'react'
 import Navbar from '@/layout/Navbar'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
+import { createRibbonStyles } from '@/styles/ribbon.styles'
 import HedronBoardSvg from '@/components/svg/hedron/HedronBoardSvg'
-import { useHedron } from '@/hooks/hedron/useHedron'
+import { useHedronMultiplayer } from '@/hooks/hedron/useHedronMultiplayer'
 
 const Hedron = () => {
   const { colors } = useContext(ThemeContext)
 
   const globalStyles = createGlobalStyles(colors)
+  const ribbonStyles = createRibbonStyles(colors)
 
   const {
+    roomCode,
+    setRoomCode,
+    username,
+    setUsername,
+    isConnected,
+    hasPeer,
+    connectToChatRoom,
+    disconnectFromChatRoom,
+
     currentPlayer,
     ownersByEdgeId,
     ownersByRegionId,
     scoreResult,
-    handleEdgePress,
-    clearGame,
-  } = useHedron()
+    turnText,
+
+    handleHedronEdgePress,
+    handleResetGame,
+
+    isPlayer2Ai,
+    setIsPlayer2Ai,
+  } = useHedronMultiplayer()
 
   return (
     <View style={globalStyles.screen}>
       <Navbar
-        roomId=''
-        setRoomId={() => { }}
-        username=''
-        setUsername={() => { }}
-        handleConnectSocket={async () => { }}
-        handleDisconnectSocket={async () => { }}
-        isConnected={false}
-        hasPeer={false}
+        roomId={roomCode}
+        setRoomId={setRoomCode}
+        username={username}
+        setUsername={setUsername}
+        handleConnectSocket={connectToChatRoom}
+        handleDisconnectSocket={disconnectFromChatRoom}
+        isConnected={isConnected}
+        hasPeer={hasPeer}
       />
 
       <View style={globalStyles.centerContent}>
-        <Text style={globalStyles.title}>
-          Hedron
-        </Text>
+        <View style={ribbonStyles.ribbon}>
+          <View style={ribbonStyles.titleBlock}>
+            <Text style={ribbonStyles.title}>
+              Hedron
+            </Text>
 
-        <Text style={globalStyles.text}>
-          Current: {currentPlayer === 'player1' ? 'X' : 'O'}
-        </Text>
+            <Text style={ribbonStyles.subtitle}>
+              {scoreResult.gameOver
+                ? 'Game Over'
+                : turnText}
+            </Text>
+          </View>
+
+          <View style={ribbonStyles.actions}>
+            {!isConnected && (
+              <View
+                style={{
+                  alignItems: 'center',
+                }}
+              >
+                <Text
+                  style={[
+                    globalStyles.text,
+                    {
+                      fontSize: 10,
+                    },
+                  ]}
+                >
+                  O AI
+                </Text>
+
+                <Switch
+                  value={isPlayer2Ai}
+                  onValueChange={setIsPlayer2Ai}
+                />
+              </View>
+            )}
+
+            <Pressable
+              style={[
+                ribbonStyles.button,
+                ribbonStyles.buttonActive,
+              ]}
+              onPress={() => handleResetGame('manual')}
+            >
+              <Text
+                style={[
+                  ribbonStyles.buttonText,
+                  ribbonStyles.buttonTextActive,
+                ]}
+              >
+                ↻
+              </Text>
+            </Pressable>
+          </View>
+        </View>
 
         <Text style={globalStyles.text}>
           X: {scoreResult.player1Expression}
@@ -68,23 +132,6 @@ const Hedron = () => {
           </Text>
         )}
 
-        {/* <Text style={globalStyles.text}>
-          GameOver: {scoreResult.gameOver ? 'yes' : 'no'}
-        </Text> */}
-
-        {/* <Text style={globalStyles.text}>
-          Unowned: {scoreResult.unownedRegionIds.join(', ')}
-        </Text> */}
-
-        <Pressable
-          style={globalStyles.primaryButton}
-          onPress={clearGame}
-        >
-          <Text style={globalStyles.primaryButtonText}>
-            Clear
-          </Text>
-        </Pressable>
-
         <HedronBoardSvg
           size={360}
           lineColor={colors.boardLine}
@@ -96,7 +143,7 @@ const Hedron = () => {
           mixedColor='#d88bd8'
           labelColor={colors.text}
           ownersByRegionId={ownersByRegionId}
-          onEdgePress={handleEdgePress}
+          onEdgePress={handleHedronEdgePress}
         />
       </View>
     </View>

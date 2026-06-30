@@ -1,6 +1,6 @@
 // native-penAndPaper/src/hooks/hedron/useHedron.tsx
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import {
   calculateHedronRegionOwners,
@@ -12,7 +12,17 @@ import type {
   HedronPlayer,
 } from '@/utils/hedronUtils/hedronRules'
 
-export const useHedron = () => {
+import {
+  suggestHedronMove,
+} from '@/utils/hedronUtils/suggestHedronMove'
+
+type Props = {
+  isPlayer2Ai?: boolean
+}
+
+export const useHedron = ({
+  isPlayer2Ai = false,
+}: Props = {}) => {
   const [currentPlayer, setCurrentPlayer] =
     useState<HedronPlayer>('player1')
 
@@ -27,24 +37,58 @@ export const useHedron = () => {
     return calculateHedronScoreResult(ownersByRegionId)
   }, [ownersByRegionId])
 
-  const handleEdgePress = (edgeId: string) => {
-    if (scoreResult.gameOver) return
+  const applyEdgeMove = (edgeId: string) => {
+    if (scoreResult.gameOver) return false
 
-    setOwnersByEdgeId((prev) => {
-      if (prev[edgeId]) return prev
+    if (ownersByEdgeId[edgeId]) return false
 
-      return {
-        ...prev,
-        [edgeId]: currentPlayer,
-      }
-    })
+    setOwnersByEdgeId((prev) => ({
+      ...prev,
+      [edgeId]: currentPlayer,
+    }))
 
     setCurrentPlayer((prev) =>
       prev === 'player1'
         ? 'player2'
         : 'player1',
     )
+
+    return true
   }
+
+  const handleEdgePress = (edgeId: string) => {
+    return applyEdgeMove(edgeId)
+  }
+
+  const handleRemoteEdgePress = (edgeId: string) => {
+    return applyEdgeMove(edgeId)
+  }
+
+  useEffect(() => {
+    if (!isPlayer2Ai) return
+    if (scoreResult.gameOver) return
+    if (currentPlayer !== 'player2') return
+
+    const timeoutId = setTimeout(() => {
+      const suggestedMove = suggestHedronMove({
+        ownersByEdgeId,
+        currentPlayer: 'player2',
+      })
+
+      if (!suggestedMove) return
+
+      console.log('Hedron AI move:', suggestedMove)
+
+      handleEdgePress(suggestedMove.edgeId)
+    }, 500)
+
+    return () => clearTimeout(timeoutId)
+  }, [
+    isPlayer2Ai,
+    scoreResult.gameOver,
+    currentPlayer,
+    ownersByEdgeId,
+  ])
 
   const clearGame = () => {
     setOwnersByEdgeId({})
@@ -57,6 +101,7 @@ export const useHedron = () => {
     ownersByRegionId,
     scoreResult,
     handleEdgePress,
+    handleRemoteEdgePress,
     clearGame,
   }
 }
