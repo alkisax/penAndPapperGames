@@ -14,6 +14,7 @@ import { createGlobalStyles } from '@/styles/global'
 import { createRibbonStyles } from '@/styles/ribbon.styles'
 import DotsAndBoxesBoardSvg from '@/components/svg/dotsAndBoxes/DotsAndBoxesBoardSvg'
 import { useDotsAndBoxesMultiplayer } from '@/hooks/dotsAndBoxes/useDotsAndBoxesMultiplayer'
+import { router } from 'expo-router'
 
 const DOT_ROWS = 10
 const DOT_COLS = 10
@@ -104,6 +105,15 @@ const DotsAndBoxes = () => {
                 />
               </View>
             )}
+
+            <Pressable
+              style={ribbonStyles.button}
+              onPress={() => router.push('/dotsAndBoxes/dotsAndBoxesInfo')}
+            >
+              <Text style={ribbonStyles.buttonText}>
+                i
+              </Text>
+            </Pressable>
 
             <Pressable
               style={[
