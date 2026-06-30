@@ -85,6 +85,15 @@ export default function Index() {
             Dandelions
           </Text>
         </Pressable>
+
+        <Pressable
+          style={globalStyles.primaryButton}
+          onPress={() => router.push('/hex/hex')}
+        >
+          <Text style={globalStyles.primaryButtonText}>
+            Hex
+          </Text>
+        </Pressable>
       </View>
     </View>
   )
