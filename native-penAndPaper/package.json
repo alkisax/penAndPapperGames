@@ -8,6 +8,7 @@
     "@microsoft/signalr": "^10.0.0",
     "axios": "^1.18.0",
     "expo": "~56.0.12",
+    "expo-audio": "^56.0.12",
     "expo-constants": "~56.0.18",
     "expo-device": "~56.0.4",
     "expo-font": "~56.0.7",

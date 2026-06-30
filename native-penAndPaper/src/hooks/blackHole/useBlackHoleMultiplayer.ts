@@ -9,7 +9,7 @@ import {
 
 import { useRoomContext } from '@/context/RoomContext'
 import type { PlayerControllers } from '@/types/blackHole.types'
-import { useBlackHole } from '@/hooks/useBlackHole'
+import { useBlackHole } from '@/hooks/blackHole/useBlackHole'
 
 type BlackHoleMovePayload = {
   cellId: number

@@ -13,6 +13,7 @@ import MoonToggleIcon from '@/components/ui/MoonToggleIcon';
 import SunToggleIcon from '@/components/ui/SunToggleIcon';
 import ChatBox from '@/components/chat/ChatBox'
 import { useRoomContext } from '@/context/RoomContext';
+import { useNotificationSound } from '@/hooks/useNotificationSound'
 
 type Props = {
   minimal?: boolean;
@@ -38,8 +39,9 @@ const Navbar = ({
   setUsername,
 }: Props) => {
   const { colors, toggle, theme } = useContext(ThemeContext);
-
   const styles = createStyles(colors);
+
+  const { playChatNotification } = useNotificationSound()
 
   const router = useRouter();
 
@@ -68,6 +70,7 @@ const Navbar = ({
       lastMessage.username !== contextUsername
     ) {
       setHasUnreadChat(true)
+      playChatNotification()
     }
 
     lastMessageCountRef.current = chatMessages.length
@@ -75,6 +78,7 @@ const Navbar = ({
     chatMessages,
     contextUsername,
     showChatBox,
+    playChatNotification,
   ])
 
   if (minimal) {

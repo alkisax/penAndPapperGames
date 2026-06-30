@@ -12,6 +12,7 @@ import { createGlobalStyles } from '@/styles/global'
 import { createRibbonStyles } from '@/styles/ribbon.styles'
 import HedronBoardSvg from '@/components/svg/hedron/HedronBoardSvg'
 import { useHedronMultiplayer } from '@/hooks/hedron/useHedronMultiplayer'
+import { router } from 'expo-router'
 
 const Hedron = () => {
   const { colors } = useContext(ThemeContext)
@@ -93,6 +94,15 @@ const Hedron = () => {
                 />
               </View>
             )}
+
+            <Pressable
+              style={ribbonStyles.button}
+              onPress={() => router.push('/hedron/hedronInfo')}
+            >
+              <Text style={ribbonStyles.buttonText}>
+                i
+              </Text>
+            </Pressable>
 
             <Pressable
               style={[
