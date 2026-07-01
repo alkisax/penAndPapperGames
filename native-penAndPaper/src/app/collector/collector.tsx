@@ -7,19 +7,16 @@ import {
 import {
   useContext,
 } from 'react'
+import { router } from 'expo-router'
 
 import Navbar from '@/layout/Navbar'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
 import { createRibbonStyles } from '@/styles/ribbon.styles'
-import DotsAndBoxesBoardSvg from '@/components/svg/dotsAndBoxes/DotsAndBoxesBoardSvg'
-import { useDotsAndBoxesMultiplayer } from '@/hooks/dotsAndBoxes/useDotsAndBoxesMultiplayer'
-import { router } from 'expo-router'
+import CollectorBoardSvg from '@/components/svg/collector/CollectorBoardSvg'
+import { useCollectorMultiplayer } from '@/hooks/collector/useCollectorMultiplayer'
 
-const DOT_ROWS = 7
-const DOT_COLS = 7
-
-const DotsAndBoxes = () => {
+const Collector = () => {
   const { colors } = useContext(ThemeContext)
 
   const globalStyles = createGlobalStyles(colors)
@@ -35,26 +32,20 @@ const DotsAndBoxes = () => {
     connectToChatRoom,
     disconnectFromChatRoom,
 
-    dotRows,
-    dotCols,
-    edges,
-    boxes,
-    player1Score,
-    player2Score,
+    cells,
     gameOver,
     winner,
+    player1LargestGroup,
+    player2LargestGroup,
+    connectionLines,
     turnText,
 
-    handleDotsAndBoxesEdgePress,
+    handleCollectorCellPress,
     handleResetGame,
 
     isPlayer2Ai,
     setIsPlayer2Ai,
-  } = useDotsAndBoxesMultiplayer({
-    dotRows: DOT_ROWS,
-    dotCols: DOT_COLS,
-    colors,
-  })
+  } = useCollectorMultiplayer()
 
   return (
     <View style={globalStyles.screen}>
@@ -73,7 +64,7 @@ const DotsAndBoxes = () => {
         <View style={ribbonStyles.ribbon}>
           <View style={ribbonStyles.titleBlock}>
             <Text style={ribbonStyles.title}>
-              Dots and Boxes
+              Collector
             </Text>
 
             <Text style={ribbonStyles.subtitle}>
@@ -108,7 +99,7 @@ const DotsAndBoxes = () => {
 
             <Pressable
               style={ribbonStyles.button}
-              onPress={() => router.push('/dotsAndBoxes/dotsAndBoxesInfo')}
+              onPress={() => router.push('/collector/collectorInfo')}
             >
               <Text style={ribbonStyles.buttonText}>
                 i
@@ -135,7 +126,7 @@ const DotsAndBoxes = () => {
         </View>
 
         <Text style={globalStyles.text}>
-          Blue: {player1Score} | Red: {player2Score}
+          Blue group: {player1LargestGroup} | Red group: {player2LargestGroup}
         </Text>
 
         {gameOver && (
@@ -149,19 +140,19 @@ const DotsAndBoxes = () => {
           </Text>
         )}
 
-        <DotsAndBoxesBoardSvg
-          rows={dotRows}
-          cols={dotCols}
-          edges={edges}
-          boxes={boxes}
-          dotColor={colors.text}
-          emptyEdgeColor={colors.boardLine}
+        <CollectorBoardSvg
+          cells={cells}
+          connectionLines={connectionLines}
+          boardBackground={colors.boardBackground}
           boardLine={colors.boardLine}
-          onEdgePress={handleDotsAndBoxesEdgePress}
+          player1Color={colors.player1}
+          player2Color={colors.player3}
+          blockedColor={colors.deadPiece}
+          onCellPress={handleCollectorCellPress}
         />
       </View>
     </View>
   )
 }
 
-export default DotsAndBoxes
+export default Collector

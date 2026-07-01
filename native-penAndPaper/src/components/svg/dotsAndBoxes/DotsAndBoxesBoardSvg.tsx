@@ -24,9 +24,9 @@ type Props = {
   boxes: DotsAndBoxesOwnedBox[]
 }
 
-const DOT_RADIUS = 5
-const SPACING = 32
-const PADDING = 24
+const DOT_RADIUS = 6
+const SPACING = 48
+const PADDING = 28
 
 const VISIBLE_LINE_WIDTH = 4
 const TOUCH_LINE_WIDTH = 22

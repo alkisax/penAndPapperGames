@@ -17,6 +17,7 @@ import HexPreviewSvg from '@/components/svg/previewSvgs/HexPreviewSvg'
 import HedronPreviewSvg from '@/components/svg/previewSvgs/HedronPreviewSvg'
 import { mainIndexStyles } from '@/styles/mainIndex.styles'
 import DotsAndBoxesPreviewSvg from '@/components/svg/previewSvgs/DotsAndBoxesPreviewSvg'
+import CollectorPreviewSvg from '@/components/svg/previewSvgs/CollectorPreviewSvg'
 
 export default function Index() {
   const { colors } = useContext(ThemeContext)
@@ -275,6 +276,39 @@ export default function Index() {
               Dots and Boxes
             </Text>
           </Pressable>
+
+          <Pressable
+            style={[
+              globalStyles.primaryButton,
+              mainIndexStyles.gameCard,
+            ]}
+            onPress={() => router.push('/collector/collector')}
+          >
+            <View
+              pointerEvents='none'
+              style={mainIndexStyles.hedronPreview}
+            >
+              <CollectorPreviewSvg
+                width={130}
+                height={130}
+                boardBackground={colors.boardBackground}
+                boardLine={colors.boardLine}
+                player1Color={colors.player1}
+                player2Color={colors.player3}
+                blockedColor={colors.deadPiece}
+              />
+            </View>
+
+            <Text
+              style={[
+                globalStyles.primaryButtonText,
+                mainIndexStyles.gameCardText,
+              ]}
+            >
+              Collector
+            </Text>
+          </Pressable>
+
         </View>
       </ScrollView>
 
