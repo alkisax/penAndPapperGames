@@ -18,6 +18,7 @@ import HedronPreviewSvg from '@/components/svg/previewSvgs/HedronPreviewSvg'
 import { mainIndexStyles } from '@/styles/mainIndex.styles'
 import DotsAndBoxesPreviewSvg from '@/components/svg/previewSvgs/DotsAndBoxesPreviewSvg'
 import CollectorPreviewSvg from '@/components/svg/previewSvgs/CollectorPreviewSvg'
+import NabPreviewSvg from '@/components/svg/previewSvgs/NabPreviewSvg'
 
 export default function Index() {
   const { colors } = useContext(ThemeContext)
@@ -316,6 +317,20 @@ export default function Index() {
             ]}
             onPress={() => router.push('/nab/nab')}
           >
+            <View
+              pointerEvents='none'
+              style={mainIndexStyles.hedronPreview}
+            >
+              <NabPreviewSvg
+                width={130}
+                height={130}
+                boardBackground={colors.boardBackground}
+                boardLine={colors.boardLine}
+                player1Color={colors.player1}
+                player2Color={colors.player3}
+              />
+            </View>
+
             <Text
               style={[
                 globalStyles.primaryButtonText,

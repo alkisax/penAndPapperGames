@@ -1,11 +1,6 @@
 import { getAllAvailableNabMoves } from './nabGameUtils'
+import type { NabMove } from './nabGameUtils'
 import type { NabCell } from './nabSvgUtils'
-
-export type SuggestedNabMove = {
-  fromCellId: number
-  toCellId: number
-  usedCellIds: number[]
-}
 
 type SuggestNabMoveParams = {
   cells: NabCell[]
@@ -15,7 +10,7 @@ type SuggestNabMoveParams = {
 export const suggestNabMove = ({
   cells,
   usedCellIds,
-}: SuggestNabMoveParams): SuggestedNabMove | null => {
+}: SuggestNabMoveParams): NabMove | null => {
   const availableMoves = getAllAvailableNabMoves(
     cells,
     usedCellIds,
@@ -38,20 +33,15 @@ export const suggestNabMove = ({
 
     let score = 0
 
-    // Καλό: αφήνω 1 κύκλο, άρα ο άλλος αναγκάζεται να πάρει τον τελευταίο.
     if (remainingCells === 1) {
       score += 1000
     }
 
-    // Κακό: παίρνω εγώ τον τελευταίο.
     if (remainingCells === 0) {
       score -= 1000
     }
 
-    // Προτίμηση σε λίγο μεγαλύτερες κινήσεις.
     score += newUsedCellIds.length * 8
-
-    // Randomness για να μη γίνεται πάντα ίδια επιλογή.
     score += Math.random() * 25
 
     return {
