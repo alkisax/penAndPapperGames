@@ -309,6 +309,23 @@ export default function Index() {
             </Text>
           </Pressable>
 
+          <Pressable
+            style={[
+              globalStyles.primaryButton,
+              mainIndexStyles.gameCard,
+            ]}
+            onPress={() => router.push('/nab/nab')}
+          >
+            <Text
+              style={[
+                globalStyles.primaryButtonText,
+                mainIndexStyles.gameCardText,
+              ]}
+            >
+              Nab
+            </Text>
+          </Pressable>
+
         </View>
       </ScrollView>
 

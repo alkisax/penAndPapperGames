@@ -2,7 +2,7 @@
   "expo": {
     "name": "Pen and Paper Games",
     "slug": "pen-and-paper-games",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "nativepenandpapper",
@@ -14,7 +14,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.alkisax.penandpapergames",
-      "versionCode": 5
+      "versionCode": 6
     },
     "web": {
       "output": "static",
