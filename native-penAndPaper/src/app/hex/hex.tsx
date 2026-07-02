@@ -67,7 +67,7 @@ const Hex = () => {
         hasPeer={hasPeer}
       />
 
-      <View style={globalStyles.centerContent}>
+      <View style={globalStyles.gameContent}>
         <View style={ribbonStyles.ribbon}>
           <View style={ribbonStyles.titleBlock}>
             <Text style={ribbonStyles.title}>
@@ -151,17 +151,19 @@ const Hex = () => {
               : 'Player 2'}
           </Text>
         )}
+        <View style={globalStyles.boardCard}>
+          <HexBoardSvg
+            boardSize={boardSize}
+            cells={cells}
+            boardBackground={colors.boardBackground}
+            boardLine={colors.boardLine}
+            player1Color={colors.player1}
+            player2Color={colors.player3}
+            currentPlayerColor={currentPlayerColor}
+            onCellPress={handleHexCellPress}
+          />
+        </View>
 
-        <HexBoardSvg
-          boardSize={boardSize}
-          cells={cells}
-          boardBackground={colors.boardBackground}
-          boardLine={colors.boardLine}
-          player1Color={colors.player1}
-          player2Color={colors.player3}
-          currentPlayerColor={currentPlayerColor}
-          onCellPress={handleHexCellPress}
-        />
       </View>
     </View>
   )

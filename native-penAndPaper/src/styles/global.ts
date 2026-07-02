@@ -284,4 +284,27 @@ export const createGlobalStyles = (colors: AppColors) =>
     segmentButtonTextActive: {
       color: "#ffffff",
     },
+
+    gameContent: {
+      flex: 1,
+      justifyContent: "flex-start",
+      alignItems: "center",
+      paddingHorizontal: SPACING.md,
+      paddingTop: SPACING.sm,
+      gap: SPACING.sm,
+    },
+
+    boardCard: {
+      padding: SPACING.sm,
+      borderRadius: RADIUS.lg,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: "center",
+      justifyContent: "center",
+      shadowColor: "#000",
+      shadowOpacity: 0.08,
+      shadowRadius: 8,
+      elevation: 3,
+    },
   });

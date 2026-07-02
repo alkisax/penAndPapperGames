@@ -55,7 +55,7 @@ const Nab = () => {
         hasPeer={hasPeer}
       />
 
-      <View style={globalStyles.centerContent}>
+      <View style={globalStyles.gameContent}>
         <View style={ribbonStyles.ribbon}>
           <View style={ribbonStyles.titleBlock}>
             <Text style={ribbonStyles.title}>
@@ -114,18 +114,21 @@ const Nab = () => {
           </View>
         </View>
 
-        <NabBoardSvg
-          cells={cells}
-          savedLines={savedLines}
-          usedCellIds={usedCellIds}
-          currentPlayer={currentPlayer}
-          winner={winner}
-          resetVersion={resetVersion}
-          onMoveAttempt={handleNabMoveAttempt}
-          handleCellPress={(cellId) => {
-            console.log('nab cell pressed:', cellId)
-          }}
-        />
+        <View style={globalStyles.boardCard}>
+          <NabBoardSvg
+            cells={cells}
+            savedLines={savedLines}
+            usedCellIds={usedCellIds}
+            currentPlayer={currentPlayer}
+            winner={winner}
+            resetVersion={resetVersion}
+            onMoveAttempt={handleNabMoveAttempt}
+            handleCellPress={(cellId) => {
+              console.log('nab cell pressed:', cellId)
+            }}
+          />
+        </View>
+
       </View>
     </View>
   )

@@ -56,7 +56,7 @@ const Hedron = () => {
         hasPeer={hasPeer}
       />
 
-      <View style={globalStyles.centerContent}>
+      <View style={globalStyles.gameContent}>
         <View style={ribbonStyles.ribbon}>
           <View style={ribbonStyles.titleBlock}>
             <Text style={ribbonStyles.title}>
@@ -141,20 +141,22 @@ const Hedron = () => {
                 : 'O'}
           </Text>
         )}
+        <View style={globalStyles.boardCard}>
+          <HedronBoardSvg
+            size={360}
+            lineColor={colors.boardLine}
+            currentPlayer={currentPlayer}
+            ownersByEdgeId={ownersByEdgeId}
+            emptyColor={colors.boardBackground}
+            player1Color={colors.player1}
+            player2Color={colors.player3}
+            mixedColor='#d88bd8'
+            labelColor={colors.text}
+            ownersByRegionId={ownersByRegionId}
+            onEdgePress={handleHedronEdgePress}
+          />
+        </View>
 
-        <HedronBoardSvg
-          size={360}
-          lineColor={colors.boardLine}
-          currentPlayer={currentPlayer}
-          ownersByEdgeId={ownersByEdgeId}
-          emptyColor={colors.boardBackground}
-          player1Color={colors.player1}
-          player2Color={colors.player3}
-          mixedColor='#d88bd8'
-          labelColor={colors.text}
-          ownersByRegionId={ownersByRegionId}
-          onEdgePress={handleHedronEdgePress}
-        />
       </View>
     </View>
   )

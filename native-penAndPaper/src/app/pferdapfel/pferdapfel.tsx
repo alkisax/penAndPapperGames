@@ -55,7 +55,7 @@ const Pferdapfel = () => {
         hasPeer={hasPeer}
       />
 
-      <View style={globalStyles.centerContent}>
+      <View style={globalStyles.gameContent}>
         <View style={ribbonStyles.ribbon}>
           <View style={ribbonStyles.titleBlock}>
             <Text
@@ -127,13 +127,16 @@ const Pferdapfel = () => {
           </View>
         </View>
 
-        <PferdApfelBoard
-          knights={knights}
-          blockedCells={blockedCells}
-          handleCellPress={handlePferdApfelCellPress}
-          boardBackground={colors.boardBackground}
-          boardLine={colors.boardLine}
-        />
+        <View style={globalStyles.boardCard}>
+          <PferdApfelBoard
+            knights={knights}
+            blockedCells={blockedCells}
+            handleCellPress={handlePferdApfelCellPress}
+            boardBackground={colors.boardBackground}
+            boardLine={colors.boardLine}
+          />
+        </View>
+
       </View>
     </View>
   )

@@ -69,7 +69,7 @@ const DotsAndBoxes = () => {
         hasPeer={hasPeer}
       />
 
-      <View style={globalStyles.centerContent}>
+      <View style={globalStyles.gameContent}>
         <View style={ribbonStyles.ribbon}>
           <View style={ribbonStyles.titleBlock}>
             <Text style={ribbonStyles.title}>
@@ -149,16 +149,19 @@ const DotsAndBoxes = () => {
           </Text>
         )}
 
-        <DotsAndBoxesBoardSvg
-          rows={dotRows}
-          cols={dotCols}
-          edges={edges}
-          boxes={boxes}
-          dotColor={colors.text}
-          emptyEdgeColor={colors.boardLine}
-          boardLine={colors.boardLine}
-          onEdgePress={handleDotsAndBoxesEdgePress}
-        />
+        <View style={globalStyles.boardCard}>
+          <DotsAndBoxesBoardSvg
+            rows={dotRows}
+            cols={dotCols}
+            edges={edges}
+            boxes={boxes}
+            dotColor={colors.text}
+            emptyEdgeColor={colors.boardLine}
+            boardLine={colors.boardLine}
+            onEdgePress={handleDotsAndBoxesEdgePress}
+          />
+        </View>
+
       </View>
     </View>
   )

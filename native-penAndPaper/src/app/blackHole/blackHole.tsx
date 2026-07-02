@@ -271,10 +271,13 @@ const BlackHole = () => {
           </View>
 
           <View style={styles.boardContainer}>
-            <BlackHoleBoard
-              handleCellPress={handleBlackHoleCellPress}
-              cells={cells}
-            />
+            <View style={globalStyles.boardCard}>
+              <BlackHoleBoard
+                handleCellPress={handleBlackHoleCellPress}
+                cells={cells}
+              />
+            </View>
+
           </View>
         </View>
       </ScrollView>

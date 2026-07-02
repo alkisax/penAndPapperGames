@@ -55,94 +55,96 @@ const Dandelions = () => {
         hasPeer={hasPeer}
       />
 
-      <View style={globalStyles.centerContent}>
-<View style={ribbonStyles.ribbon}>
-  <View style={ribbonStyles.titleBlock}>
-    <Text style={ribbonStyles.title}>
-      Dandelions
-    </Text>
+      <View style={globalStyles.gameContent}>
+        <View style={ribbonStyles.ribbon}>
+          <View style={ribbonStyles.titleBlock}>
+            <Text style={ribbonStyles.title}>
+              Dandelions
+            </Text>
 
-    <Text style={ribbonStyles.subtitle}>
-      {gameOver
-        ? `Winner: ${winner?.toUpperCase()}`
-        : turnText}
-    </Text>
-  </View>
+            <Text style={ribbonStyles.subtitle}>
+              {gameOver
+                ? `Winner: ${winner?.toUpperCase()}`
+                : turnText}
+            </Text>
+          </View>
 
-  <View style={ribbonStyles.actions}>
-    <View
-      style={{
-        alignItems: 'center',
-      }}
-    >
-      <Text style={ribbonStyles.smallLabel}>
-        D AI
-      </Text>
+          <View style={ribbonStyles.actions}>
+            <View
+              style={{
+                alignItems: 'center',
+              }}
+            >
+              <Text style={ribbonStyles.smallLabel}>
+                D AI
+              </Text>
 
-      <Switch
-        value={isDandelionAi}
-        onValueChange={setIsDandelionAi}
-      />
-    </View>
+              <Switch
+                value={isDandelionAi}
+                onValueChange={setIsDandelionAi}
+              />
+            </View>
 
-    <View
-      style={{
-        alignItems: 'center',
-      }}
-    >
-      <Text style={ribbonStyles.smallLabel}>
-        W AI
-      </Text>
+            <View
+              style={{
+                alignItems: 'center',
+              }}
+            >
+              <Text style={ribbonStyles.smallLabel}>
+                W AI
+              </Text>
 
-      <Switch
-        value={isWindAi}
-        onValueChange={setIsWindAi}
-      />
-    </View>
+              <Switch
+                value={isWindAi}
+                onValueChange={setIsWindAi}
+              />
+            </View>
 
-    <Pressable
-      style={ribbonStyles.button}
-      onPress={() => router.push('/dandelions/dandelionsInfo')}
-    >
-      <Text style={ribbonStyles.buttonText}>
-        i
-      </Text>
-    </Pressable>
+            <Pressable
+              style={ribbonStyles.button}
+              onPress={() => router.push('/dandelions/dandelionsInfo')}
+            >
+              <Text style={ribbonStyles.buttonText}>
+                i
+              </Text>
+            </Pressable>
 
-    <Pressable
-      style={[
-        ribbonStyles.button,
-        ribbonStyles.buttonActive,
-      ]}
-      onPress={handleResetGame}
-    >
-      <Text
-        style={[
-          ribbonStyles.buttonText,
-          ribbonStyles.buttonTextActive,
-        ]}
-      >
-        ↻
-      </Text>
-    </Pressable>
-  </View>
-</View>
+            <Pressable
+              style={[
+                ribbonStyles.button,
+                ribbonStyles.buttonActive,
+              ]}
+              onPress={handleResetGame}
+            >
+              <Text
+                style={[
+                  ribbonStyles.buttonText,
+                  ribbonStyles.buttonTextActive,
+                ]}
+              >
+                ↻
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+        <View style={globalStyles.boardCard}>
+          <DandelionsBoardSvg
+            cells={cells}
+            handleCellPress={handleCellPress}
+            boardBackground={colors.boardBackground}
+            boardLine={colors.boardLine}
+            dandelionColor={colors.player1}
+            seedColor={colors.player1}
+          />
 
-        <DandelionsBoardSvg
-          cells={cells}
-          handleCellPress={handleCellPress}
-          boardBackground={colors.boardBackground}
-          boardLine={colors.boardLine}
-          dandelionColor={colors.player1}
-          seedColor={colors.player1}
-        />
+          <DandelionsCompassSvg
+            lineColor={colors.boardLine}
+            arrowColor={colors.player1}
+            usedDirections={usedDirections}
+            handleDirectionPress={handleWindDirectionPress}
+          />
+        </View>
 
-        <DandelionsCompassSvg
-          lineColor={colors.boardLine}
-          arrowColor={colors.player1}
-          usedDirections={usedDirections}
-          handleDirectionPress={handleWindDirectionPress}
-        />
 
       </View>
     </View>

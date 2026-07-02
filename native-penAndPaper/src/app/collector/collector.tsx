@@ -60,7 +60,7 @@ const Collector = () => {
         hasPeer={hasPeer}
       />
 
-      <View style={globalStyles.centerContent}>
+      <View style={globalStyles.gameContent}>
         <View style={ribbonStyles.ribbon}>
           <View style={ribbonStyles.titleBlock}>
             <Text style={ribbonStyles.title}>
@@ -139,17 +139,19 @@ const Collector = () => {
                 : 'Red'}
           </Text>
         )}
+        <View style={globalStyles.boardCard}>
+          <CollectorBoardSvg
+            cells={cells}
+            connectionLines={connectionLines}
+            boardBackground={colors.boardBackground}
+            boardLine={colors.boardLine}
+            player1Color={colors.player1}
+            player2Color={colors.player3}
+            blockedColor={colors.deadPiece}
+            onCellPress={handleCollectorCellPress}
+          />
+        </View>
 
-        <CollectorBoardSvg
-          cells={cells}
-          connectionLines={connectionLines}
-          boardBackground={colors.boardBackground}
-          boardLine={colors.boardLine}
-          player1Color={colors.player1}
-          player2Color={colors.player3}
-          blockedColor={colors.deadPiece}
-          onCellPress={handleCollectorCellPress}
-        />
       </View>
     </View>
   )
