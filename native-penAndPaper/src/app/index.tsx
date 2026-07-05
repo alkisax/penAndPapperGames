@@ -20,6 +20,7 @@ import DotsAndBoxesPreviewSvg from '@/components/svg/previewSvgs/DotsAndBoxesPre
 import CollectorPreviewSvg from '@/components/svg/previewSvgs/CollectorPreviewSvg'
 import NabPreviewSvg from '@/components/svg/previewSvgs/NabPreviewSvg'
 import ImpariumPreviewSvg from '@/components/svg/previewSvgs/ImpariumPreviewSvg'
+import SnakeFightPreviewSvg from '@/components/svg/previewSvgs/SnakeFightPreviewSvg'
 
 export default function Index() {
   const { colors } = useContext(ThemeContext)
@@ -370,6 +371,38 @@ export default function Index() {
               ]}
             >
               Imparium
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={[
+              globalStyles.primaryButton,
+              mainIndexStyles.gameCard,
+            ]}
+            onPress={() => router.push('/snakefight/snakefight')}
+          >
+            <View
+              pointerEvents='none'
+              style={mainIndexStyles.hedronPreview}
+            >
+              <SnakeFightPreviewSvg
+                width={130}
+                height={130}
+                boardBackground={colors.boardBackground}
+                boardLine={colors.boardLine}
+                player1Color={colors.player1}
+                player2Color={colors.player3}
+                dotColor={colors.text}
+              />
+            </View>
+
+            <Text
+              style={[
+                globalStyles.primaryButtonText,
+                mainIndexStyles.gameCardText,
+              ]}
+            >
+              Snake Fight
             </Text>
           </Pressable>
 
