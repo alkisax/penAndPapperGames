@@ -9,6 +9,7 @@ import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
 import { useRoomContext } from '@/context/RoomContext'
 import ChatBox from '@/components/chat/ChatBox'
+import SupportDeveloperAdButton from '@/ads/SupportDeveloperAdButton'
 import BlackHolePreviewSvg from '@/components/svg/previewSvgs/BlackHolePreviewSvg'
 import PferdApfelPreviewSvg from '@/components/svg/previewSvgs/PferdApfelPreviewSvg'
 import PaperAirfightPreviewSvg from '@/components/svg/previewSvgs/PaperAirfightPreviewSvg'
@@ -407,6 +408,7 @@ export default function Index() {
           </Pressable>
 
         </View>
+        <SupportDeveloperAdButton />
       </ScrollView>
 
     </View>

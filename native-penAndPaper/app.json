@@ -31,6 +31,12 @@
             "imageWidth": 76
           }
         }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-4041382605494077~7641501079"
+        }
       ]
     ],
     "experiments": {

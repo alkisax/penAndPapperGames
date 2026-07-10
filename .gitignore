@@ -184,3 +184,4 @@ Thumbs.db
 *.pem
 local.properties
 release-key.keystore
+gradle.properties

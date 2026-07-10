@@ -8,5 +8,5 @@ export const SOCKET_URL =
 
 export const appName = 'Pen and Paper games'
 
-export const bannerAdUnitId  = 'ca-app-pub-4041382605494077/7590271474'
-export const interstitialAdUnitId = 'ca-app-pub-4041382605494077/1563297051'
+export const bannerAdUnitId  = 'ca-app-pub-4041382605494077/6425612003'
+export const interstitialAdUnitId = 'ca-app-pub-4041382605494077/8921994397'
