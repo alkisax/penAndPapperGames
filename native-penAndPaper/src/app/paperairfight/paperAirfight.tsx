@@ -8,6 +8,7 @@ import { router } from 'expo-router'
 import PaperAirfightBoardSvg from '@/components/svg/paperairfight/paperAirfightBoardSvg'
 import SlingshotComponentSvg from '@/components/svg/slingshot/SlingshotComponentSvg'
 import { usePaperAirfightMultiplayer } from '@/hooks/paperAirfight/usePaperAirfightMultiplayer'
+import PaperAirfightPreviewSvg from '@/components/svg/previewSvgs/PaperAirfightPreviewSvg'
 
 const PaperAirfight = () => {
   // Theme
@@ -65,6 +66,23 @@ const PaperAirfight = () => {
         }}
         showsVerticalScrollIndicator={false}
       >
+        <View
+          pointerEvents='none'
+          style={globalStyles.gameBackgroundPreview}
+        >
+          <PaperAirfightPreviewSvg
+            width={280}
+            height={280}
+            boardBackground={colors.boardBackground}
+            boardLine={colors.boardLine}
+            baseColor={colors.primary}
+            goalColor={colors.player2}
+            player1Color={colors.player1}
+            player2Color={colors.player3}
+            opacity={0.08}
+          />
+        </View>
+
         {/* Header ribbon */}
         <View
           style={[

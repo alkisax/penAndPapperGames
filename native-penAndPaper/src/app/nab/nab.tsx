@@ -7,6 +7,7 @@ import NabBoardSvg from '@/components/svg/nab/NabBoardSvg'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
 import { createRibbonStyles } from '@/styles/ribbon.styles'
+import NabPreviewSvg from '@/components/svg/previewSvgs/NabPreviewSvg'
 import { useNabMultiplayer } from '@/hooks/nab/useNabMultiplayer'
 import { router } from 'expo-router'
 
@@ -56,6 +57,20 @@ const Nab = () => {
       />
 
       <View style={globalStyles.gameContent}>
+        <View
+          pointerEvents='none'
+          style={globalStyles.gameBackgroundPreview}
+        >
+          <NabPreviewSvg
+            width={280}
+            height={280}
+            boardBackground={colors.boardBackground}
+            boardLine={colors.boardLine}
+            player1Color={colors.player1}
+            player2Color={colors.player2}
+            opacity={0.08}
+          />
+        </View>
         <View style={ribbonStyles.ribbon}>
           <View style={ribbonStyles.titleBlock}>
             <Text style={ribbonStyles.title}>

@@ -12,6 +12,7 @@ import Navbar from '@/layout/Navbar'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
 import { createRibbonStyles } from '@/styles/ribbon.styles'
+import PferdApfelPreviewSvg from '@/components/svg/previewSvgs/PferdApfelPreviewSvg'
 import { usePferdApfelMultiplayer } from '@/hooks/pferdapfel/usePferdApfelMultiplayer'
 import { router } from 'expo-router'
 
@@ -56,6 +57,20 @@ const Pferdapfel = () => {
       />
 
       <View style={globalStyles.gameContent}>
+        <View
+          pointerEvents='none'
+          style={globalStyles.gameBackgroundPreview}
+        >
+          <PferdApfelPreviewSvg
+            width={280}
+            height={280}
+            boardBackground={colors.boardBackground}
+            boardLine={colors.boardLine}
+            player1Color={colors.player1}
+            player2Color={colors.player2}
+            opacity={0.08}
+          />
+        </View>
         <View style={ribbonStyles.ribbon}>
           <View style={ribbonStyles.titleBlock}>
             <Text

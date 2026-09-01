@@ -10,6 +10,7 @@ import Navbar from '@/layout/Navbar'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
 import { createRibbonStyles } from '@/styles/ribbon.styles'
+import HedronPreviewSvg from '@/components/svg/previewSvgs/HedronPreviewSvg'
 import HedronBoardSvg from '@/components/svg/hedron/HedronBoardSvg'
 import { useHedronMultiplayer } from '@/hooks/hedron/useHedronMultiplayer'
 import { router } from 'expo-router'
@@ -57,6 +58,19 @@ const Hedron = () => {
       />
 
       <View style={globalStyles.gameContent}>
+        <View pointerEvents='none' style={globalStyles.gameBackgroundPreview}>
+          <HedronPreviewSvg
+            width={280}
+            height={280}
+            lineColor={colors.boardLine}
+            emptyColor={colors.boardBackground}
+            player1Color={colors.player1}
+            player2Color={colors.player2}
+            mixedColor={colors.primary}
+            labelColor={colors.text}
+            opacity={0.08}
+          />
+        </View>
         <View style={ribbonStyles.ribbon}>
           <View style={ribbonStyles.titleBlock}>
             <Text style={ribbonStyles.title}>

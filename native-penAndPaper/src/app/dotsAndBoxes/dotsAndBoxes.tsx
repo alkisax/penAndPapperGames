@@ -12,6 +12,7 @@ import Navbar from '@/layout/Navbar'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
 import { createRibbonStyles } from '@/styles/ribbon.styles'
+import DotsAndBoxesPreviewSvg from '@/components/svg/previewSvgs/DotsAndBoxesPreviewSvg'
 import DotsAndBoxesBoardSvg from '@/components/svg/dotsAndBoxes/DotsAndBoxesBoardSvg'
 import { useDotsAndBoxesMultiplayer } from '@/hooks/dotsAndBoxes/useDotsAndBoxesMultiplayer'
 import { router } from 'expo-router'
@@ -70,6 +71,22 @@ const DotsAndBoxes = () => {
       />
 
       <View style={globalStyles.gameContent}>
+        <View
+          pointerEvents='none'
+          style={[
+            globalStyles.gameBackgroundPreview,
+            { opacity: 0.08 },
+          ]}
+        >
+          <DotsAndBoxesPreviewSvg
+            width={280}
+            height={280}
+            boardBackground={colors.boardBackground}
+            boardLine={colors.boardLine}
+            player1Color={colors.player1}
+            player2Color={colors.player2}
+          />
+        </View>
         <View style={ribbonStyles.ribbon}>
           <View style={ribbonStyles.titleBlock}>
             <Text style={ribbonStyles.title}>

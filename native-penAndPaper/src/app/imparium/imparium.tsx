@@ -14,6 +14,7 @@ import Navbar from '@/layout/Navbar'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
 import { createRibbonStyles } from '@/styles/ribbon.styles'
+import ImpariumPreviewSvg from '@/components/svg/previewSvgs/ImpariumPreviewSvg'
 import ImpariumBoardSvg from '@/components/svg/imparium/ImpariumBoardSvg'
 import { useImpariumMultiplayer } from '@/hooks/imparium/useImpariumMultiplayer'
 import { router } from 'expo-router'
@@ -62,6 +63,20 @@ const Imparium = () => {
       />
 
       <View style={globalStyles.gameContent}>
+        <View
+          pointerEvents='none'
+          style={globalStyles.gameBackgroundPreview}
+        >
+          <ImpariumPreviewSvg
+            width={280}
+            height={280}
+            boardBackground={colors.boardBackground}
+            boardLine={colors.boardLine}
+            player1Color={colors.player1}
+            player2Color={colors.player2}
+            opacity={0.08}
+          />
+        </View>
         <View style={ribbonStyles.ribbon}>
           <View style={ribbonStyles.titleBlock}>
             <Text style={ribbonStyles.title}>

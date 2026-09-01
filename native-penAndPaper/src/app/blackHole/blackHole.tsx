@@ -10,6 +10,7 @@ import { createBlackHoleStyles } from '@/styles/blackHole.styles'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
 import { createRibbonStyles } from '@/styles/ribbon.styles'
+import BlackHolePreviewSvg from '@/components/svg/previewSvgs/BlackHolePreviewSvg'
 
 const BlackHole = () => {
   const { colors } = useContext(ThemeContext)
@@ -61,6 +62,22 @@ const BlackHole = () => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.settingsCard}>
+          <View
+            pointerEvents='none'
+            style={globalStyles.gameBackgroundPreview}
+          >
+            <BlackHolePreviewSvg
+              width={280}
+              height={280}
+              player1Color={colors.player1}
+              player2Color={colors.player2}
+              player3Color={colors.player3}
+              blackHoleColor={colors.blackHole}
+              lineColor={colors.boardLine}
+              backgroundColor={colors.boardBackground}
+              opacity={0.08}
+            />
+          </View>
           <View
             style={[
               ribbonStyles.ribbon,

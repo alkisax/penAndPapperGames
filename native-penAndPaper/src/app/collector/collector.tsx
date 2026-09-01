@@ -13,6 +13,7 @@ import Navbar from '@/layout/Navbar'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
 import { createRibbonStyles } from '@/styles/ribbon.styles'
+import CollectorPreviewSvg from '@/components/svg/previewSvgs/CollectorPreviewSvg'
 import CollectorBoardSvg from '@/components/svg/collector/CollectorBoardSvg'
 import { useCollectorMultiplayer } from '@/hooks/collector/useCollectorMultiplayer'
 
@@ -61,6 +62,20 @@ const Collector = () => {
       />
 
       <View style={globalStyles.gameContent}>
+        <View
+          pointerEvents='none'
+          style={globalStyles.gameBackgroundPreview}
+        >
+          <CollectorPreviewSvg
+            width={280}
+            height={280}
+            boardBackground={colors.boardBackground}
+            boardLine={colors.boardLine}
+            player1Color={colors.player1}
+            player2Color={colors.player2}
+            opacity={0.08}
+          />
+        </View>
         <View style={ribbonStyles.ribbon}>
           <View style={ribbonStyles.titleBlock}>
             <Text style={ribbonStyles.title}>

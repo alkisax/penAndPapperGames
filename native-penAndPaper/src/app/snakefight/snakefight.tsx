@@ -10,6 +10,7 @@ import Navbar from '@/layout/Navbar'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createGlobalStyles } from '@/styles/global'
 import { createRibbonStyles } from '@/styles/ribbon.styles'
+import SnakeFightPreviewSvg from '@/components/svg/previewSvgs/SnakeFightPreviewSvg'
 import SnakeFightBoardSvg from '@/components/svg/snakefight/SnakeFightBoardSvg'
 import { useSnakeFightMultiplayer } from '@/hooks/snakefight/useSnakeFightMultiplayer'
 import {
@@ -66,6 +67,21 @@ const SnakeFight = () => {
       />
 
       <View style={globalStyles.gameContent}>
+        <View
+          pointerEvents='none'
+          style={globalStyles.gameBackgroundPreview}
+        >
+          <SnakeFightPreviewSvg
+            width={280}
+            height={280}
+            boardBackground={colors.boardBackground}
+            boardLine={colors.boardLine}
+            player1Color={colors.player1}
+            player2Color={colors.player3}
+            dotColor={colors.text}
+            opacity={0.08}
+          />
+        </View>
         <View style={ribbonStyles.ribbon}>
           <View style={ribbonStyles.titleBlock}>
             <Text style={ribbonStyles.title}>

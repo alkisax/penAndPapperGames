@@ -294,6 +294,13 @@ export const createGlobalStyles = (colors: AppColors) =>
       gap: SPACING.sm,
     },
 
+    gameBackgroundPreview: {
+      position: "absolute",
+      top: 120,
+      alignSelf: "center",
+      zIndex: 0,
+    },
+
     boardCard: {
       padding: SPACING.sm,
       borderRadius: RADIUS.lg,

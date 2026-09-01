@@ -10,6 +10,7 @@ import DandelionsCompassSvg from '@/components/svg/dandelion/DandelionsCompassSv
 import useDandelions from '@/hooks/dandelions/useDandelions'
 import useDandelionsMultiplayer from '@/hooks/dandelions/useDandelionsMultiplayer'
 import { createRibbonStyles } from '@/styles/ribbon.styles'
+import DandelionsPreviewSvg from '@/components/svg/previewSvgs/DandelionsPreviewSvg'
 
 const Dandelions = () => {
   const { colors } = useContext(ThemeContext)
@@ -56,6 +57,20 @@ const Dandelions = () => {
       />
 
       <View style={globalStyles.gameContent}>
+        <View
+          pointerEvents='none'
+          style={globalStyles.gameBackgroundPreview}
+        >
+          <DandelionsPreviewSvg
+            width={280}
+            height={280}
+            boardBackground={colors.boardBackground}
+            boardLine={colors.boardLine}
+            dandelionColor={colors.player1}
+            seedColor={colors.player2}
+            opacity={0.08}
+          />
+        </View>
         <View style={ribbonStyles.ribbon}>
           <View style={ribbonStyles.titleBlock}>
             <Text style={ribbonStyles.title}>
