@@ -408,8 +408,12 @@ export default function Index() {
           </Pressable>
 
         </View>
-        <SupportDeveloperAdButton />
+        {/* <SupportDeveloperAdButton /> */}
       </ScrollView>
+
+      <View style={mainIndexStyles.supportAdWrapper}>
+        <SupportDeveloperAdButton />
+      </View>
 
     </View>
   )

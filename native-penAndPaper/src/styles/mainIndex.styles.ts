@@ -75,4 +75,12 @@ export const mainIndexStyles = StyleSheet.create({
     top: -24,
     opacity: 0.25,
   },
+
+  supportAdWrapper: {
+    width: "100%",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingTop: 6,
+    paddingBottom: 10,
+  },
 });
