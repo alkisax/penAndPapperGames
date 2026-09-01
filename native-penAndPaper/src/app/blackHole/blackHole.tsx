@@ -61,23 +61,23 @@ const BlackHole = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        <View
+          pointerEvents='none'
+          style={globalStyles.gameBackgroundPreview}
+        >
+          <BlackHolePreviewSvg
+            width={430}
+            height={430}
+            player1Color={colors.player1}
+            player2Color={colors.player2}
+            player3Color={colors.player3}
+            blackHoleColor={colors.blackHole}
+            lineColor={colors.boardLine}
+            backgroundColor={colors.boardBackground}
+          />
+        </View>
+
         <View style={styles.settingsCard}>
-          <View
-            pointerEvents='none'
-            style={globalStyles.gameBackgroundPreview}
-          >
-            <BlackHolePreviewSvg
-              width={280}
-              height={280}
-              player1Color={colors.player1}
-              player2Color={colors.player2}
-              player3Color={colors.player3}
-              blackHoleColor={colors.blackHole}
-              lineColor={colors.boardLine}
-              backgroundColor={colors.boardBackground}
-              opacity={0.08}
-            />
-          </View>
           <View
             style={[
               ribbonStyles.ribbon,

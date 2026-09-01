@@ -75,12 +75,11 @@ const DotsAndBoxes = () => {
           pointerEvents='none'
           style={[
             globalStyles.gameBackgroundPreview,
-            { opacity: 0.08 },
           ]}
         >
           <DotsAndBoxesPreviewSvg
-            width={280}
-            height={280}
+            width={430}
+            height={430}
             boardBackground={colors.boardBackground}
             boardLine={colors.boardLine}
             player1Color={colors.player1}

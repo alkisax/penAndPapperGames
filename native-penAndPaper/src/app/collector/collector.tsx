@@ -67,13 +67,12 @@ const Collector = () => {
           style={globalStyles.gameBackgroundPreview}
         >
           <CollectorPreviewSvg
-            width={280}
-            height={280}
+            width={430}
+            height={430}
             boardBackground={colors.boardBackground}
             boardLine={colors.boardLine}
             player1Color={colors.player1}
             player2Color={colors.player2}
-            opacity={0.08}
           />
         </View>
         <View style={ribbonStyles.ribbon}>

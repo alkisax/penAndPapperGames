@@ -296,9 +296,21 @@ export const createGlobalStyles = (colors: AppColors) =>
 
     gameBackgroundPreview: {
       position: "absolute",
-      top: 120,
-      alignSelf: "center",
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      justifyContent: "center",
+      alignItems: "center",
+      opacity: 0.07,
       zIndex: 0,
+    },
+
+    gameForeground: {
+      zIndex: 1,
+      alignItems: "center",
+      gap: SPACING.sm,
+      width: "100%",
     },
 
     boardCard: {

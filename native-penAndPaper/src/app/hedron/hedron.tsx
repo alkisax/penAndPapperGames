@@ -58,17 +58,19 @@ const Hedron = () => {
       />
 
       <View style={globalStyles.gameContent}>
-        <View pointerEvents='none' style={globalStyles.gameBackgroundPreview}>
+        <View
+          pointerEvents='none'
+          style={globalStyles.gameBackgroundPreview}
+        >
           <HedronPreviewSvg
-            width={280}
-            height={280}
+            width={430}
+            height={430}
             lineColor={colors.boardLine}
             emptyColor={colors.boardBackground}
             player1Color={colors.player1}
             player2Color={colors.player2}
             mixedColor={colors.primary}
             labelColor={colors.text}
-            opacity={0.08}
           />
         </View>
         <View style={ribbonStyles.ribbon}>

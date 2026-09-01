@@ -62,13 +62,12 @@ const Dandelions = () => {
           style={globalStyles.gameBackgroundPreview}
         >
           <DandelionsPreviewSvg
-            width={280}
-            height={280}
+            width={430}
+            height={430}
             boardBackground={colors.boardBackground}
             boardLine={colors.boardLine}
             dandelionColor={colors.player1}
             seedColor={colors.player2}
-            opacity={0.08}
           />
         </View>
         <View style={ribbonStyles.ribbon}>

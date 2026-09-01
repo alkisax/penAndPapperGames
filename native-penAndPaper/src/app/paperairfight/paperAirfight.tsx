@@ -71,15 +71,14 @@ const PaperAirfight = () => {
           style={globalStyles.gameBackgroundPreview}
         >
           <PaperAirfightPreviewSvg
-            width={280}
-            height={280}
+            width={430}
+            height={430}
             boardBackground={colors.boardBackground}
             boardLine={colors.boardLine}
             baseColor={colors.primary}
             goalColor={colors.player2}
             player1Color={colors.player1}
             player2Color={colors.player3}
-            opacity={0.08}
           />
         </View>
 
