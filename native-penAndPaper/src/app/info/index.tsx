@@ -4,6 +4,7 @@ import { ScrollView, Text, View } from 'react-native'
 import Navbar from '@/layout/Navbar'
 import { ThemeContext } from '@/context/ThemeContext'
 import { createInfoStyles } from '@/styles/info.styles'
+import PrivacyChoicesButton from '@/ads/components/PrivacyChoicesButton'
 
 const Info = () => {
   const { colors } = useContext(ThemeContext)
@@ -70,6 +71,8 @@ const Info = () => {
             devices may watch as spectators.
           </Text>
         </View>
+
+        <PrivacyChoicesButton />
       </ScrollView>
     </View>
 
